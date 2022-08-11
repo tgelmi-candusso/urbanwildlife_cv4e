@@ -1,0 +1,10 @@
+numpy
+pandas
+pillow
+matplotlib
+pypi-json
+tqdm
+sklearn
+torch
+torchvision
+PyYAML
