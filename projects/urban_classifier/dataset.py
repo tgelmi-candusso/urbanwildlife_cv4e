@@ -15,7 +15,7 @@ from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, ToTensor
 from PIL import Image
 import pandas as pd
-from pathlib import Path
+from pathlib import P
 
 
 class CTDataset(Dataset):
@@ -45,7 +45,7 @@ class CTDataset(Dataset):
         lines = f.readlines() # load all lines
 
         for line in lines: # loop over lines
-            file_name = Path(line)
+            file_name = line.strip().replace("\\", "/")
             sp = os.path.split(file_name)[0]
             print(file_name)
             print(os.path.split(file_name))
