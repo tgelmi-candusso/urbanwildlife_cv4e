@@ -1,7 +1,10 @@
 
 #%% continuation code to non-ran_splitting
 ### group by categories ##IM HERE IN PROGRESS
-    im_dic_df = pandas.DataFrame.from_dict(non_red_dic, orient='index')
+    import os
+
+
+im_dic_df = pandas.DataFrame.from_dict(non_red_dic, orient='index')
     im_dic_df.reset_index()
 
     for_splitting['group'] = for_splitting.groupby(['0', '2'], sort=False).ngroup() + 1

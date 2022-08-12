@@ -14,6 +14,7 @@ import json
 from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, ToTensor
 from PIL import Image
+import pandas as pd
 
 
 class CTDataset(Dataset):
@@ -33,7 +34,10 @@ class CTDataset(Dataset):
         # index data into list
         self.data = []
         #dict categories
-        self.species_to_index_mapping = dict()
+        cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv'), 'r')
+        species_idx = cat_csv['class'].to_list()
+        species = cat_csv['description'].to_list()
+        self.species_to_index_mapping = dict(zip(species, species_idx))
 
         #load the train file
         f = open(os.path.join(self.data_root, self.split.lower()+'.txt'), 'r') 
@@ -42,10 +46,7 @@ class CTDataset(Dataset):
             file_name = line.strip()
             species, _ = os.path.split(file_name)
             
-           #TODO: check if species is in self.species_to_index_mapping
-            if species not in self.species_to_index_mapping[species]:
-                continue
-           # if not, add it and assign an index
+            # if not, add it and assign an index
             species_idx = self.species_to_index_mapping[species]
             self.data.append([file_name, species_idx])
 

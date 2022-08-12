@@ -63,13 +63,50 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None):
     sorted_name_time_pairs = [(t,n) for t, n in zip(sorted_names, sorted_times)]
     reduced_files = [t0[0] for (t0,t1) in zip(sorted_name_time_pairs, sorted_name_time_pairs[1:]) if datetime.strptime(t1[1], " %Y-%m-%d %H:%M:%S") - datetime.strptime(t0[1], " %Y-%m-%d %H:%M:%S") > timedelta(seconds=5)]
  
+    #reduce dictionary containing file paths as keys and [location, datetime, daytime] as values
     non_red_dic = {k: im_dic[k] for k in reduced_files}
 
-
+    #create dictionary of file paths with image_id
     names2 = list(non_red_dic.keys())
     non_red_map = {k: map[k] for k in names2}
+    #list of ids (dkw \o/)
     ids = [non_red_map[i] for i in non_red_map]
 
+    im_dic_cat = {}
+    for item in non_red_dic:
+        split_category = non_red_dic[item][0] + "." + non_red_dic[item][2]
+        if split_category not in im_dic_cat:
+            im_dic_cat[split_category] = []
+        im_dic_cat[split_category].append(item)
+    
+    for sp in os.listdir(training_folder):
+        directory = os.path.join(training_folder, sp)
+    if not os.path.isdir(directory):
+        continue
+    
+    ## im here
+    files_inside_s = os.listdir(directory)
+    for files in files_inside_s:
+        if file not in im_dic_cat
+    
+    
+    if num_images_max is not None or num_images_max > len(files_inside_s):
+    random.shuffle(files_inside_s)
+
+    
+        # perform random subsampling
+        files_inside_s = files_inside_s[0:num_images_max]
+
+    for f in range(len(files_inside_s)):
+        files_inside_s[f] = os.path.join(sp, files_inside_s[f])
+
+    train = int(len(files_inside_s)*sample_percent[0])
+    val = int(len(files_inside_s)*sample_percent[1])
+    # test = int(len(files_inside_s)*sample_percent[2])
+
+    train_samples = files_inside_s[0:train]
+    val_samples = files_inside_s[train+1:train+val]
+    test_samples = files_inside_s[train+val+1:]     # all the rest for test
 
 
 ## extract files from coco file
