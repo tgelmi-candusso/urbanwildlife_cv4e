@@ -45,7 +45,7 @@ class CTDataset(Dataset):
 
         for line in lines: # loop over lines
             file_name = line.strip()
-            sp, _ = os.path.split(os.path.normpath(file_name))
+            sp = os.path.split(os.path.normpath(file_name))[0]
             print(file_name)
             print("sp",sp)
             
