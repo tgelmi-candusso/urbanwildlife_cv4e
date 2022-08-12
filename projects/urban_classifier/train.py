@@ -20,6 +20,7 @@ from torch.optim import SGD
 from util import init_seed
 from dataset import CTDataset
 from model import CustomResNet18
+from torch.utils.tensorboard import SummaryWriter 
 
 
 
@@ -242,6 +243,10 @@ def main():
         print(f'WARNING: device set to "{device}" but CUDA not available; falling back to CPU...')
         cfg['device'] = 'cpu'
 
+    # initialize Tensorboard
+    tbWriter = SummaryWriter(log_dir=cfg['log_dir'])
+    os.makedirs(cfg['log_dir'], exist_ok=True)
+
     # initialize data loaders for training and validation set
     dl_train = create_dataloader(cfg, split='train')
     dl_val = create_dataloader(cfg, split='val')
@@ -260,6 +265,10 @@ def main():
 
         loss_train, oa_train = train(cfg, dl_train, model, optim)
         loss_val, oa_val = validate(cfg, dl_val, model)
+
+        # write to TensorBoard
+        tbWriter.add_scalar('loss/train', loss_train)
+        tbWriter.add_scalar('loss/val', loss_val)
 
         # combine stats and save
         stats = {
