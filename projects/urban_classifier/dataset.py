@@ -44,7 +44,7 @@ class CTDataset(Dataset):
         lines = f.readlines() # load all lines
         for line in lines: # loop over lines
             file_name = line.strip()
-            sp, _ = os.path.split(file_name)
+            sp, _ = os.path.split(os.path.abspath(file_name))
             print(file_name)
             print("sp",sp)
             
