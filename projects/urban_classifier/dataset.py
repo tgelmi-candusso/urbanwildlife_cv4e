@@ -15,7 +15,7 @@ from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, ToTensor
 from PIL import Image
 import pandas as pd
-from pathlib import P
+
 
 
 class CTDataset(Dataset):
