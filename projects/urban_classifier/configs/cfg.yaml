@@ -9,7 +9,7 @@ num_workers: 2
 
 # dataset parameters
 data_root: '/datadrive/animals_training_dataset'
-num_classes: 16
+num_classes: 19
 
 # training hyperparameters
 image_size: [224, 224]
