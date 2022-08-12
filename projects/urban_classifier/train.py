@@ -226,7 +226,7 @@ def main():
     # Argument parser for command-line arguments:
     # python ct_classifier/train.py --config configs/exp_resnet18.yaml
     parser = argparse.ArgumentParser(description='Train deep learning model.')
-    parser.add_argument('--config', help='Path to config file', default='configs/exp_resnet18.yaml')
+    parser.add_argument('--config', help='Path to config file', default='projects/urban_classifier/configs/exp_resnet18.yaml')
     args = parser.parse_args()
 
     # load config
