@@ -19,7 +19,7 @@ import pandas as pd
 
 class CTDataset(Dataset):
 
-    def __init__(self, cfg, split='train'):
+    def __init__(self, cfg, split='train_fix'):
         '''
             Constructor. Here, we collect and index the dataset inputs and
             labels.
