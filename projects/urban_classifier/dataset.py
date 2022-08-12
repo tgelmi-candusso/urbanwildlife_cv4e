@@ -45,10 +45,8 @@ class CTDataset(Dataset):
 
         for line in lines: # loop over lines
             file_name = line.strip()
-            rp = os.path.realpath(file_name)
-            sp = os.path.dirname(rp)
+            sp = os.path.dirname(file_name)
             print(file_name)
-            print(rp)
             print("sp", sp)
             
             # if not, add it and assign an index
