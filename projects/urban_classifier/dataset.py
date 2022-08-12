@@ -42,9 +42,10 @@ class CTDataset(Dataset):
         #load the train file
         f = open(os.path.join(self.data_root, self.split.lower()+'.txt'), 'r') 
         lines = f.readlines() # load all lines
+
         for line in lines: # loop over lines
             file_name = line.strip()
-            sp, _ = os.path.split(os.path.abspath(file_name))
+            sp, _ = os.path.split(os.path.normpath(file_name))
             print(file_name)
             print("sp",sp)
             
@@ -75,3 +76,5 @@ class CTDataset(Dataset):
         img_tensor = self.transform(img)
 
         return img_tensor, label
+
+# %%
