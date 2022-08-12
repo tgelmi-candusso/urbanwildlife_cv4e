@@ -8,7 +8,7 @@ device: cuda
 num_workers: 2
 
 # dataset parameters
-data_root: 'D:\animals_training_dataset'
+data_root: '/datadrive/animals_training_dataset'
 num_classes: 16
 
 # training hyperparameters
