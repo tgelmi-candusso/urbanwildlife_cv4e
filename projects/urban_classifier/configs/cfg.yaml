@@ -18,4 +18,4 @@ batch_size: 1
 learning_rate: 0.001
 weight_decay: 0.001
 
-log_dir: 'logs/my_experiment'
+log_dir: 'logs/urban_wildlife_random_split'
