@@ -45,6 +45,8 @@ class CTDataset(Dataset):
         for line in lines: # loop over lines
             file_name = line.strip()
             sp, _ = os.path.split(file_name)
+            print(file_name)
+            print("sp",sp)
             
             # if not, add it and assign an index
             species_idx = self.species_to_index_mapping[sp]
