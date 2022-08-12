@@ -44,10 +44,10 @@ class CTDataset(Dataset):
         lines = f.readlines() # load all lines
         for line in lines: # loop over lines
             file_name = line.strip()
-            species, _ = os.path.split(file_name)
+            sp, _ = os.path.split(file_name)
             
             # if not, add it and assign an index
-            species_idx = self.species_to_index_mapping[species]
+            species_idx = self.species_to_index_mapping[sp]
             self.data.append([file_name, species_idx])
 
 
