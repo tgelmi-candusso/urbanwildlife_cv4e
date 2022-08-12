@@ -1,2 +1,5 @@
 .vscode
 datasets
+
+__pycache__
+*.pyc
