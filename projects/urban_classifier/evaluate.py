@@ -72,11 +72,11 @@ def predict(cfg, dataLoader, model):
             #print(prediction.shape) ## it is going to be [batch size #num_classes]
             
             ## predictions
-            predict_label = torch.argmax(prediction, dim=1).numpy() ## the label
+            predict_label = torch.argmax(prediction, dim=19).numpy() ## the label
             predicted_labels.extend(predict_label)
             #print(predict_label)
 
-            confidence = torch.nn.Softmax(dim=1)(prediction).numpy()
+            confidence = torch.nn.Softmax(dim=19)(prediction).numpy()
             confidence = confidence[:,1]
             confidences.extend(confidence)
 
