@@ -94,16 +94,13 @@ def predict(cfg, dataLoader, model):
 def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train'):
     # make figures folder if not there
 
-    matrix_path = cfg['data_root']+'/figs'
-    #### make the path if it doesn't exist
-    if not os.path.exists(matrix_path):  
-        os.makedirs(matrix_path, exist_ok=True)
+    os.makedirs('figs', exist_ok=True)
 
     confmatrix = confusion_matrix(true_labels, predicted_labels)
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=None)
     disp.plot()
     #plt.show()
-    plt.savefig(cfg['data_root'] +'/figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
+    plt.savefig('figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
     
        ## took out epoch)
     return confmatrix
