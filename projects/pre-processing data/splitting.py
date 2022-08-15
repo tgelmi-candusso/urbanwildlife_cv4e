@@ -12,11 +12,16 @@ num_images_max = 1000
 def split(training_folder, output_folder, sample_percent, num_images_max=None):
     ###random splitting, not recommended for setup, correct splitting later on
     ## create random subset to move on
-    write_train = open(os.path.join(output_folder, 'train.txt'), mode = 'w')
-    write_val = open(os.path.join(output_folder, 'val.txt'), mode = 'w')
-    write_test = open(os.path.join(output_folder, 'test.txt'), mode = 'w')
+    
+    output_subfolder = os.path.join(output_folder, 'split_random')
+    os.makedirs(output_subfolder, exist_ok=True)
+    write_train = open(os.path.join(output_subfolder, 'train.txt'), mode = 'w')
+    write_val = open(os.path.join(output_subfolder, 'val.txt'), mode = 'w')
+    write_test = open(os.path.join(output_subfolder, 'test.txt'), mode = 'w')
 
-    for sp in os.listdir(training_folder):
+    species_folders = os.listdir(training_folder)
+    for idx, sp in enumerate(species_folders):
+        print(f'[{idx+1}/{len(species_folders)}] {sp}')
         directory = os.path.join(training_folder, sp)
         if not os.path.isdir(directory):
             continue
