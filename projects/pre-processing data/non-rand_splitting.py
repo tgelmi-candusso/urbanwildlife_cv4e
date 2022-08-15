@@ -27,14 +27,14 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None, s
         coco_data = json.load(f)
 
     # writers for train/val/test txt files
-    if split_by_location = True:
-        output_subfolder = os.join.path(output_folder, 'split_by_loc')
+    if split_by_location:
+        output_subfolder = os.path.join(output_folder, 'split_by_loc')
         os.makedirs(output_subfolder, exist_ok=True)
         write_train = open(os.path.join(output_subfolder, 'train.txt'), mode = 'w')
         write_val = open(os.path.join(output_subfolder, 'val.txt'), mode = 'w')
         write_test = open(os.path.join(output_subfolder, 'test.txt'), mode = 'w')
     else:
-        output_subfolder = os.join.path(output_folder, 'split_across_loc')
+        output_subfolder = os.path.join(output_folder, 'split_across_loc')
         os.makedirs(output_subfolder, exist_ok=True)
         write_train = open(os.path.join(output_subfolder, 'train.txt'), mode = 'w')
         write_val = open(os.path.join(output_subfolder, 'val.txt'), mode = 'w')
@@ -181,7 +181,7 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None, s
 
 
 
-split(training_folder, output_folder, sample_percent, num_images_max, split_by_location=True)
-split(training_folder, output_folder, sample_percent, num_images_max, split_by_location=False)
+#split(training_folder, output_folder, sample_percent)
+split(training_folder, output_folder, sample_percent, split_by_location = False)
 
 # %%
