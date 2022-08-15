@@ -5,7 +5,7 @@ import numpy as np
 import argparse
 import os
 from glob import glob
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, plot_confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score, PrecisionRecallDisplay
 import matplotlib.pyplot as plt
 from model import CustomResNet18
@@ -100,7 +100,7 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
         os.makedirs(matrix_path, exist_ok=True)
 
     confmatrix = confusion_matrix(true_labels, predicted_labels)
-    disp = ConfusionMatrixDisplay(confmatrix)
+    disp = plot_confusion_matrix(confmatrix)
     disp.savefig(cfg['data_root'] +'/figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
     
        ## took out epoch)
