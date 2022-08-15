@@ -5,6 +5,7 @@ import numpy as np
 import argparse
 import os
 from glob import glob
+from tqdm import tqdm
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, plot_confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score, PrecisionRecallDisplay
 import matplotlib.pyplot as plt
@@ -62,7 +63,7 @@ def predict(cfg, dataLoader, model):
         ### this will evaluate on each batch of data (usually 64)
         #IPython.embed()
         #print(len(dataLoader)) ## number of total divisions n/batchsize
-        for idx, (data, label) in enumerate(dataLoader): 
+        for idx, (data, label) in enumerate(tqdm(dataLoader)): 
                 #print(idx)
             true_label = label.numpy()
             true_labels.extend(true_label)
@@ -91,13 +92,13 @@ def predict(cfg, dataLoader, model):
 
     return true_labels, predicted_labels, confidences
 
-def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train'):
+def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train', labels=None):
     # make figures folder if not there
 
     os.makedirs('figs', exist_ok=True)
 
     confmatrix = confusion_matrix(true_labels, predicted_labels)
-    disp = ConfusionMatrixDisplay(confmatrix, display_labels=None)
+    disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
     disp.plot()
     #plt.show()
     plt.savefig('figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
@@ -141,13 +142,19 @@ def main():
     #predict
     true_labels, predicted_labels, confidence = predict(cfg, dl_val, model)
 
+    # legend (species names in order)
+    species_available = np.unique(true_labels).tolist()
+    species_available.sort()
+    mapping_inv = dict([v,k] for k,v in dl_val.dataset.species_to_index_mapping.items())
+    legend = np.array([mapping_inv[s] for s in species_available])
+
      # get accuracy score
     ### this is just a way to get two decimal places 
     acc = accuracy_score(true_labels, predicted_labels)
     print("Accuracy of model is {:0.2f}".format(acc))
 
     # confusion matrix
-    confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = 200, split = 'train')
+    confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = 200, split = 'train', labels=legend)
     print("confusion matrix saved")
 
     ######################### put this all in a function ###############
