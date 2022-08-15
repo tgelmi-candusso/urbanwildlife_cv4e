@@ -100,10 +100,10 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
         os.makedirs(matrix_path, exist_ok=True)
 
     confmatrix = confusion_matrix(true_labels, predicted_labels)
-    #disp = ConfusionMatrixDisplay(confmatrix, display_labels=None)
-    #disp.plot()
+    disp = ConfusionMatrixDisplay(confmatrix, display_labels=None)
+    disp.plot()
     #plt.show()
-    confmatrix.savefig(cfg['data_root'] +'/figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
+    plt.savefig(cfg['data_root'] +'/figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
     
        ## took out epoch)
     return confmatrix
