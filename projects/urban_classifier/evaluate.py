@@ -8,7 +8,7 @@ from glob import glob
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score
 from sklearn.metrics import precision_score, recall_score, f1_score, PrecisionRecallDisplay
 import matplotlib.pyplot as plt
-#from model import CustomResNet50
+from model import CustomResNet18
 from train import create_dataloader, load_model 
 import pandas as pd
 import random
