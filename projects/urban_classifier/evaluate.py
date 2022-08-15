@@ -91,6 +91,22 @@ def predict(cfg, dataLoader, model):
 
     return true_labels, predicted_labels, confidences
 
+def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train'):
+    # make figures folder if not there
+
+    matrix_path = cfg['data_root']+'/figs'
+    #### make the path if it doesn't exist
+    if not os.path.exists(matrix_path):  
+        os.makedirs(matrix_path, exist_ok=True)
+
+    confmatrix = confusion_matrix(true_labels, predicted_labels)
+    disp = ConfusionMatrixDisplay(confmatrix)
+    disp.savefig(cfg['data_root'] +'/figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
+    
+       ## took out epoch)
+    return confmatrix
+
+
 def main():
 
     # Argument parser for command-line arguments:
@@ -131,21 +147,22 @@ def main():
     acc = accuracy_score(true_labels, predicted_labels)
     print("Accuracy of model is {:0.2f}".format(acc))
 
-    ######################### put this all in a function ##############
+    ######################### put this all in a function ###############
+    # #this must categorical
     # get precision score
     ### this is just a way to get two decimal places 
-    precision = precision_score(true_labels, predicted_labels)
-    print("Precision of model is {:0.2f}".format(precision))
+    #precision = precision_score(true_labels, predicted_labels)
+    #print("Precision of model is {:0.2f}".format(precision))
 
     # get recall score
     ### this is just a way to get two decimal places 
-    recall = recall_score(true_labels, predicted_labels)
-    print("Recall of model is {:0.2f}".format(recall))
+    #recall = recall_score(true_labels, predicted_labels)
+    #print("Recall of model is {:0.2f}".format(recall))
 
     # get recall score
     ### this is just a way to get two decimal places 
-    F1score = f1_score(true_labels, predicted_labels)
-    print("F1score of model is {:0.2f}".format(F1score))
+    #F1score = f1_score(true_labels, predicted_labels)
+    #print("F1score of model is {:0.2f}".format(F1score))
 
 
 if __name__ == '__main__':
