@@ -181,7 +181,7 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None, s
 
 
 
-#split(training_folder, output_folder, sample_percent)
+split(training_folder, output_folder, sample_percent)
 split(training_folder, output_folder, sample_percent, split_by_location = False)
 
 # %%
