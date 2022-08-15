@@ -34,7 +34,7 @@ def load_model(cfg):
     model_instance = CustomResNet18(cfg['num_classes'])         # create an object instance of our CustomResNet18 class
 
     # load latest model state
-    model_states = glob.glob('model_states/*.pt')
+    model_states = glob('model_states/*.pt')
     if len(model_states):
         # at least one save state found; get latest
         model_epochs = [int(m.replace('model_states/','').replace('.pt','')) for m in model_states]

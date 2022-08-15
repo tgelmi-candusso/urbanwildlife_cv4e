@@ -8,3 +8,6 @@ sklearn
 torch
 torchvision
 pyyaml
+tensorboard
+IPython
+Python-Glob
