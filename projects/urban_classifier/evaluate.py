@@ -147,6 +147,10 @@ def main():
     acc = accuracy_score(true_labels, predicted_labels)
     print("Accuracy of model is {:0.2f}".format(acc))
 
+    # confusion matrix
+    confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = 200, split = 'train')
+    print("confusion matrix saved")
+
     ######################### put this all in a function ###############
     # #this must categorical
     # get precision score
