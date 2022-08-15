@@ -135,27 +135,34 @@ def main():
     # initialize data loaders for training and validation set
     dl_train = create_dataloader(cfg, split='train')
     dl_val = create_dataloader(cfg, split='val')
+    dl_test = create_dataloader(cfg, split='test')
 
-    # initialize model
-    model, current_epoch = load_model(cfg)
+    def generate_results(data_loader, split):
 
-    #predict
-    true_labels, predicted_labels, confidence = predict(cfg, dl_val, model)
+        # initialize model
+        model, current_epoch = load_model(cfg)
 
-    # legend (species names in order)
-    species_available = np.unique(true_labels).tolist()
-    species_available.sort()
-    mapping_inv = dict([v,k] for k,v in dl_val.dataset.species_to_index_mapping.items())
-    legend = np.array([mapping_inv[s] for s in species_available])
+        #predict
+        true_labels, predicted_labels, confidence = predict(cfg, data_loader, model)
 
-     # get accuracy score
-    ### this is just a way to get two decimal places 
-    acc = accuracy_score(true_labels, predicted_labels)
-    print("Accuracy of model is {:0.2f}".format(acc))
+        #generate function for running results with true_labels, predicted_labels, confidence as input variables
+        # legend (species names in order)
+        species_available = np.unique(true_labels).tolist()
+        species_available.sort()
+        mapping_inv = dict([v,k] for k,v in dl_val.dataset.species_to_index_mapping.items())
+        legend = np.array([mapping_inv[s] for s in species_available])
 
-    # confusion matrix
-    confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = 200, split = 'train', labels=legend)
-    print("confusion matrix saved")
+        # get accuracy score
+        ### this is just a way to get two decimal places 
+        acc = accuracy_score(true_labels, predicted_labels)
+        print("Accuracy of model is {:0.2f}".format(acc))
+
+        # confusion matrix
+        confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = 200, split = split, labels=legend)
+        print("confusion matrix saved")
+
+    generate_results(data_loader=dl_val, split='val')
+    generate_results(data_loader=dl_test, split='test')
 
     ######################### put this all in a function ###############
     # #this must categorical
@@ -174,6 +181,10 @@ def main():
     #F1score = f1_score(true_labels, predicted_labels)
     #print("F1score of model is {:0.2f}".format(F1score))
 
+#top-k accuracy
+# class average accuracy - average precision
+#sklearn.classifier.metrics
+#classifier report
 
 if __name__ == '__main__':
     # This block only gets executed if you call the "train.py" script directly

@@ -20,13 +20,14 @@ import pandas as pd
 
 class CTDataset(Dataset):
 
-    def __init__(self, cfg, split='train'):
+    def __init__(self, cfg, split='train', split_type = 'split_by_loc'):
         '''
             Constructor. Here, we collect and index the dataset inputs and
             labels.
         '''
         self.data_root = cfg['data_root']
         self.split = split
+        self.split_type = split_type
         self.transform = Compose([              # Transforms. Here's where we could add data augmentation (see Björn's lecture on August 11).
             Resize((cfg['image_size'])),        # For now, we just resize the images to the same dimensions...
             ToTensor()                          # ...and convert them to torch.Tensor.
@@ -41,7 +42,7 @@ class CTDataset(Dataset):
         self.species_to_index_mapping = dict(zip(species, species_idx))
 
         #load the train file
-        f = open(os.path.join(self.data_root, self.split.lower()+'.txt'), 'r') 
+        f = open(os.path.join(self.data_root, self.split_type.lower(), self.split.lower()+'.txt'), 'r') 
         lines = f.readlines() # load all lines
 
         for line in lines: # loop over lines
