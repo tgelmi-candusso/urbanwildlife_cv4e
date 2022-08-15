@@ -18,7 +18,7 @@ coco_path = 'C:/Users/tizge/Documents/GitHub/urbanwildlife_cv4e/datasets/TUW/tra
 
 
 # %%
-def split(training_folder, output_folder, sample_percent, num_images_max=None):
+def split(training_folder, output_folder, sample_percent, num_images_max=None, split_by_location=True):
     ###random splitting, not recommended for setup, correct splitting later on
     ## create random subset to move on
 
@@ -26,8 +26,24 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None):
     with open(coco_path) as f:
         coco_data = json.load(f)
 
+    # writers for train/val/test txt files
+    if split_by_location = True:
+        output_subfolder = os.join.path(output_folder, 'split_by_loc')
+        os.makedirs(output_subfolder, exist_ok=True)
+        write_train = open(os.path.join(output_subfolder, 'train.txt'), mode = 'w')
+        write_val = open(os.path.join(output_subfolder, 'val.txt'), mode = 'w')
+        write_test = open(os.path.join(output_subfolder, 'test.txt'), mode = 'w')
+    else:
+        output_subfolder = os.join.path(output_folder, 'split_across_loc')
+        os.makedirs(output_subfolder, exist_ok=True)
+        write_train = open(os.path.join(output_subfolder, 'train.txt'), mode = 'w')
+        write_val = open(os.path.join(output_subfolder, 'val.txt'), mode = 'w')
+        write_test = open(os.path.join(output_subfolder, 'test.txt'), mode = 'w')
+
     ##create dictionary for station and datetime per path
-    for sp in os.listdir(training_folder):
+    species_folders = os.listdir(training_folder)
+    for idx, sp in enumerate(species_folders):
+        print(f'[{idx+1}/{len(species_folders)}] {sp}')
         directory = os.path.join(training_folder, sp)
         if not os.path.isdir(directory):
             continue
@@ -35,7 +51,7 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None):
 
         im_dic = {}
         for u in coco_data['images']:
-            key = u['file_path']
+            key = u['file_name']
             value = [u['station'], u['datetime']]
             if key not in files_inside_s:
                 continue
@@ -44,7 +60,7 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None):
 
         map = {}
         for u in coco_data['images']:
-            key = u['file_path']
+            key = u['file_name']
             value = u['image_id']
             if key not in files_inside_s:
                 continue
@@ -91,53 +107,81 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None):
                 im_dic_cat[split_category] = []
             im_dic_cat[split_category].append(item)
     
-    
-    ###next step is choosing 0.6 0.1 0.3 of each cateogorin 
-    # in the previous dictionary, and append them to a list 
-    # tht will append the lists resulting from each sp loop
-    
-    if num_images_max is not None or num_images_max > len(files_inside_s):
-    random.shuffle(files_inside_s)
+        # split into train/val/test
+        if split_by_location:
+            keys = list(im_dic_cat.keys())
+            random.shuffle(keys)
+            train = int(len(keys)*sample_percent[0])
+            val = int(len(keys)*sample_percent[1])
+            #test = int(len(keys)*sample_percent[2])
+
+            train_samples = keys[0:train]
+            val_samples = keys[train+1:train+val]
+            test_samples = keys[train+val+1:]     # all the rest for test
+         
+            for sample in train_samples:
+                images = im_dic_cat[sample]
+                write_train.write('\n'.join([os.path.join(sp, i) for i in images]))
+                write_train.write('\n')
+                # write_train.write(sample + '\n')
+            for sample in val_samples:
+                images = im_dic_cat[sample]
+                write_val.write('\n'.join([os.path.join(sp, i) for i in images]))
+                write_val.write('\n')
+            for sample in test_samples:
+                images = im_dic_cat[sample]
+                write_test.write('\n'.join([os.path.join(sp, i) for i in images]))
+                write_test.write('\n')
+
+        else:
+            for key in im_dic_cat.keys():
+                imgs = im_dic_cat[key]
+                train = int(len(imgs)*sample_percent[0])
+                val = int(len(imgs)*sample_percent[1])
+
+                train_samples = imgs[0:train]
+                val_samples = imgs[train+1:train+val]
+                test_samples = imgs[train+val+1:]   
+                
+                write_train.write('\n'.join([os.path.join(sp, i) for i in train_samples]))
+                write_train.write('\n')
+
+                write_val.write('\n'.join([os.path.join(sp, i) for i in val_samples]))
+                write_val.write('\n')
+
+                write_test.write('\n'.join([os.path.join(sp, i) for i in test_samples]))
+                write_test.write('\n')
+
+    write_train.close()
+    write_val.close()
+    write_test.close()
 
     
-        # perform random subsampling
-        files_inside_s = files_inside_s[0:num_images_max]
+    
+## extract files from coco file if training a detector which we wont
+#    images_out = []
+#    annotations_out = []
+#    categories_out = coco_data['categories']
 
-    for f in range(len(files_inside_s)):
-        files_inside_s[f] = os.path.join(sp, files_inside_s[f])
+#    for i in coco_data['images']:
+#        if i['image_id'] in ids:
+#            images_out.append(i)
 
-    train = int(len(files_inside_s)*sample_percent[0])
-    val = int(len(files_inside_s)*sample_percent[1])
-    # test = int(len(files_inside_s)*sample_percent[2])
+#    for i in coco_data['annotations']:
+#        if i['image_id'] in ids:
+#            annotations_out.append(i)
 
-    train_samples = files_inside_s[0:train]
-    val_samples = files_inside_s[train+1:train+val]
-    test_samples = files_inside_s[train+val+1:]     # all the rest for test
-
-
-## extract files from coco file
-    images_out = []
-    annotations_out = []
-    categories_out = coco_data['categories']
-
-    for i in coco_data['images']:
-        if i['image_id'] in ids:
-            images_out.append(i)
-
-    for i in coco_data['annotations']:
-        if i['image_id'] in ids:
-            annotations_out.append(i)
-
-    train_data = {
-        "images": images_out,
-        "annotations": annotations_out,
-        "categories": categories_out
-    }
+#    train_data = {
+#        "images": images_out,
+#        "annotations": annotations_out,
+#        "categories": categories_out
+#    }
 
 #main issue now is mapping the json file with the dictionary
 
 
 
-split(training_folder, output_folder, sample_percent, num_images_max)
+split(training_folder, output_folder, sample_percent, num_images_max, split_by_location=True)
+split(training_folder, output_folder, sample_percent, num_images_max, split_by_location=False)
 
 # %%
