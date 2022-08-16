@@ -24,12 +24,12 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 
-def create_dataloader(cfg, split='train'):
+def create_dataloader(cfg, split='train', num_imgs_per_species=-1):
     '''
         Loads a dataset according to the provided split and wraps it in a
         PyTorch DataLoader object.
     '''
-    dataset_instance = CTDataset(cfg, split)        # create an object instance of our CTDataset class
+    dataset_instance = CTDataset(cfg, split, max_num=num_imgs_per_species)        # create an object instance of our CTDataset class
 
     dataLoader = DataLoader(
             dataset=dataset_instance,
@@ -127,7 +127,7 @@ def train(cfg, dataLoader, model, optimizer):
 
     # iterate over dataLoader
     progressBar = trange(len(dataLoader))
-    for idx, (data, labels) in enumerate(dataLoader):       # see the last line of file "dataset.py" where we return the image tensor (data) and label
+    for idx, (data, labels, _) in enumerate(dataLoader):       # see the last line of file "dataset.py" where we return the image tensor (data) and label
 
         # put data and labels on device
         data, labels = data.to(device), labels.to(device)
@@ -193,7 +193,7 @@ def validate(cfg, dataLoader, model):
     progressBar = trange(len(dataLoader))
     
     with torch.no_grad():               # don't calculate intermediate gradient steps: we don't need them, so this saves memory and is faster
-        for idx, (data, labels) in enumerate(dataLoader):
+        for idx, (data, labels, _) in enumerate(dataLoader):
 
             # put data and labels on device
             data, labels = data.to(device), labels.to(device)
@@ -253,8 +253,7 @@ def main():
     tbWriter = SummaryWriter(log_dir=cfg['log_dir'])
     os.makedirs(cfg['log_dir'], exist_ok=True)
 
-    # initialize data loaders for training and validation set
-    dl_train = create_dataloader(cfg, split='train')
+    # initialize data loader for validation set
     dl_val = create_dataloader(cfg, split='val')
 
     # initialize model
@@ -266,6 +265,13 @@ def main():
     # we have everything now: data loaders, model, optimizer; let's do the epochs!
     numEpochs = cfg['num_epochs']
     while current_epoch < numEpochs:
+        # Curriculum learning: (re-) create training dataloader w.r.t. number of images per species
+        num_imgs_per_species = cfg['max_num']
+        idx = min(current_epoch, len(num_imgs_per_species)-1)
+        num_imgs_per_species = num_imgs_per_species[idx]
+        print(f'Resampling training dataset with {num_imgs_per_species} images per species...')
+        dl_train = create_dataloader(cfg, split='train', num_imgs_per_species=num_imgs_per_species)
+
         current_epoch += 1
         print(f'Epoch {current_epoch}/{numEpochs}')
 
@@ -273,8 +279,12 @@ def main():
         loss_val, oa_val = validate(cfg, dl_val, model)
 
         # write to TensorBoard
-        tbWriter.add_scalar('loss/train', loss_train)
-        tbWriter.add_scalar('loss/val', loss_val)
+        tbWriter.add_scalar('loss/train', loss_train, current_epoch)
+        tbWriter.add_scalar('loss/val', loss_val, current_epoch)
+        tbWriter.add_scalar('oa/train', oa_train, current_epoch)
+        tbWriter.add_scalar('oa/val', oa_val, current_epoch)
+        tbWriter.add_scalar('num_imgs_per_species', num_imgs_per_species, current_epoch)
+        tbWriter.flush()
 
         # combine stats and save
         stats = {

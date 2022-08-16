@@ -82,6 +82,6 @@ class CTDataset(Dataset):
         # transform: see lines 31ff above where we define our transformations
         img_tensor = self.transform(img)
 
-        return img_tensor, label
+        return img_tensor, label, image_path
 
 # %%

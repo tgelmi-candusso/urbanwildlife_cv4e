@@ -12,6 +12,7 @@ from sklearn.preprocessing import label_binarize
 import matplotlib.pyplot as plt
 from train import create_dataloader, load_model 
 from tqdm import trange
+from PIL import Image
 
 import torch
 import torch.nn as nn
@@ -23,7 +24,6 @@ from util import init_seed
 from dataset import CTDataset
 from model import CustomResNet18
 from torch.utils.tensorboard import SummaryWriter 
-
 
 def predict(cfg, dataLoader, model, device):
 
@@ -38,7 +38,7 @@ def predict(cfg, dataLoader, model, device):
         ### this will evaluate on each batch of data (usually 64)
         #IPython.embed()
         #print(len(dataLoader)) ## number of total divisions n/batchsize
-        for idx, (data, label) in enumerate(tqdm(dataLoader)): 
+        for idx, (data, label, image_path) in enumerate(tqdm(dataLoader)): 
                 #print(idx)
             true_label = label.numpy()
             true_labels.extend(true_label)
@@ -56,6 +56,7 @@ def predict(cfg, dataLoader, model, device):
 
             confidence = torch.nn.Softmax(dim=1)(prediction).cpu().numpy()
             confidences.append(confidence)
+
 
     true_labels = np.array(true_labels)
     #print(true_labels)
@@ -126,6 +127,21 @@ def generate_results(data_loader, split, cfg, model, epoch, device, args):
         _ = display.ax_.set_title(f"Prec-Rec ep. {epoch}, species {mapping_inv.get(i, i)}")
         plt.savefig(f'figs/{split_type}/{split}/prec_rec/epoch_{epoch}_{mapping_inv.get(i, i)}.png', facecolor="white")
     
+    # for i in range(confidence.shape[0]): #for every image
+    #     missclass = true_labels[i] != predicted_labels[i]
+    #     if missclass == True:
+    #         plt.imshow(img)
+                  # plt.figure()
+            # plt.imshow(img)
+            # ax = plt.gca()
+            # ax.add_patch(Rectangle(
+            #           (u_ann['bbox'][0], u_ann['bbox'][1],),
+            #           u_ann['bbox'][2], u_ann['bbox'][3],
+            #           ec='r', fill=False
+            #         ))
+            # name1 = os.path.join(path_spfull, im_dic[u_ann['image_id']])
+            # plt.savefig(name1)
+
     #macro_average = sklearn.metrics.average_precision_score(true_labels, predicted_labels)
         #print("Macro average of model is {:0.2f}".format(macro_average))
 
