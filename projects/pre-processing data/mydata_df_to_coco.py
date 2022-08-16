@@ -94,7 +94,7 @@ def preprocess (path_to_labels, megadetector_output, images_folder, save_json_pa
         images_dict[key]["annotations"] = []
          
         for det in img['detections']:
-            if det['conf'] <= 0.59:
+            if det['conf'] <= 0.80:
                 continue
             
             #convert relative XY/XY to absolute XYWH coordinates
