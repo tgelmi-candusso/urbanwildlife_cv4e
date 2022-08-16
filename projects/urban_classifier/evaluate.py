@@ -6,8 +6,9 @@ import argparse
 import os
 from glob import glob
 from tqdm import tqdm
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, plot_confusion_matrix
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score, plot_confusion_matrix, average_precision_score, precision_recall_curve
 from sklearn.metrics import precision_score, recall_score, f1_score, PrecisionRecallDisplay
+from sklearn.preprocessing import label_binarize
 import matplotlib.pyplot as plt
 from model import CustomResNet18
 from train import create_dataloader, load_model 
@@ -163,6 +164,37 @@ def main():
         # confusion matrix
         confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = 200, split = split, labels=legend)
         print("confusion matrix saved")
+
+        ###evaluation metrics:
+        # For each class
+        precision = dict()
+        recall = dict()
+        average_precision = dict()
+        ##binarize classes, but what is y? https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html#sphx-glr-auto-examples-model-selection-plot-precision-recall-py
+        Y = label_binarize(y, classes=[0:19])
+        #shape would be number of features, this may be exchangeable with the categories csv or labels
+        n_classes = Y.shape[1]
+
+        for i in range(n_classes):
+            precision[i], recall[i], _ = precision_recall_curve(true_labels[:, i], predicted_labels[:, i])
+            average_precision[i] = average_precision_score(true_labels[:, i], predicted_labels[:, i])
+
+        # A "micro-average": quantifying score on all classes jointly
+        precision["micro"], recall["micro"], _ = precision_recall_curve(
+            true_labels.ravel(), predicted_labels.ravel()
+        )
+        average_precision["micro"] = average_precision_score(true_labels, predicted_labels, average="micro")
+        
+        display = PrecisionRecallDisplay(
+        recall=recall["micro"],
+        precision=precision["micro"],
+        average_precision=average_precision["micro"],
+        )
+        display.plot()
+        _ = display.ax_.set_title("Micro-averaged over all classes")
+
+        #macro_average = sklearn.metrics.average_precision_score(true_labels, predicted_labels)
+        #print("Macro average of model is {:0.2f}".format(macro_average))
 
     generate_results(data_loader=dl_val, split='val')
     generate_results(data_loader=dl_test, split='test')
