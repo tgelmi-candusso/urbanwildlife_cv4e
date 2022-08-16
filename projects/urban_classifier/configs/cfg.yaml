@@ -14,7 +14,7 @@ num_classes: 19
 # training hyperparameters
 image_size: [224, 224]
 num_epochs: 200
-batch_size: 32 ##it was 1 with random
+batch_size: 128 ##it was 1 with random
 learning_rate: 0.001
 weight_decay: 0.001
 
