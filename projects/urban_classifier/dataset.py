@@ -3,7 +3,7 @@
 '''
 
 import os
-import json
+import random
 from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, ToTensor
 from PIL import Image
@@ -13,7 +13,7 @@ import pandas as pd
 
 class CTDataset(Dataset):
 
-    def __init__(self, cfg, split='train', split_type = 'split_by_loc'):
+    def __init__(self, cfg, split='train', split_type = 'split_by_loc', max_num=-1):
         '''
             Constructor. Here, we collect and index the dataset inputs and
             labels.
@@ -21,13 +21,14 @@ class CTDataset(Dataset):
         self.data_root = cfg['data_root']
         self.split = split
         self.split_type = split_type
+        self.max_num = max_num
         self.transform = Compose([              # Transforms. Here's where we could add data augmentation (see Björn's lecture on August 11).
             Resize((cfg['image_size'])),        # For now, we just resize the images to the same dimensions...
             ToTensor()                          # ...and convert them to torch.Tensor.
         ])
         
-        # index data into list
-        self.data = []
+        # index data into dict
+        data_dict = {}
         #dict categories
         cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
         species_idx = cat_csv['class'].to_list()
@@ -46,7 +47,18 @@ class CTDataset(Dataset):
             
             # if not, add it and assign an index
             species_idx = self.species_to_index_mapping[sp]
-            self.data.append([file_name, species_idx])
+            if species_idx not in data_dict:
+                data_dict[species_idx] = []
+            data_dict[species_idx].append(file_name)
+        
+        # subsample if needed
+        self.data = []
+        for species in data_dict.keys():
+            species_list = [[i, species] for i in data_dict[species]]
+            if max_num > 0:
+                random.shuffle(species_list)
+                species_list = species_list[:min(len(species_list), max_num)]
+            self.data.extend(species_list)
 
 
     def __len__(self):

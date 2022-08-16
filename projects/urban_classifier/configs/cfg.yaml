@@ -21,3 +21,7 @@ weight_decay: 0.001
 log_dir: 'logs/urban_wildlife_across_loc' #or split_by_loc split_across_loc or random_split (already ran)
 split_type: 'split_across_loc' #or split_across_loc or split_random
 model_dir: 'model_states/split_across_loc'
+
+##data augmentation
+#curriculum learning, max numb of images per class
+max_num: 1000
