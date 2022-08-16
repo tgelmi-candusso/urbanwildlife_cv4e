@@ -35,15 +35,18 @@ def load_model(cfg):
     model_instance = CustomResNet18(cfg['num_classes'])         # create an object instance of our CustomResNet18 class
 
     # load latest model state
-    model_states = glob('model_states/*.pt')
+    modelDir = cfg['model_dir']
+    if not modelDir.endswith(os.sep):
+        modelDir += os.sep
+    model_states = glob(os.path.join(modelDir, '*.pt'))
     if len(model_states):
         # at least one save state found; get latest
-        model_epochs = [int(m.replace('model_states/','').replace('.pt','')) for m in model_states]
+        model_epochs = [int(m.replace(modelDir,'').replace('.pt','')) for m in model_states]
         start_epoch = max(model_epochs)
 
         # load state dict and apply weights to model
         print(f'Resuming from epoch {start_epoch}')
-        state = torch.load(open(f'model_states/{start_epoch}.pt', 'rb'), map_location='cpu')
+        state = torch.load(open(os.path.join(modelDir, f'{start_epoch}.pt'), 'rb'), map_location='cpu')
         model_instance.load_state_dict(state['model'])
 
     else:
