@@ -1,12 +1,5 @@
 '''
-    PyTorch dataset class for COCO-CT-formatted datasets. Note that you could
-    use the official PyTorch MS-COCO wrappers:
-    https://pytorch.org/vision/master/generated/torchvision.datasets.CocoDetection.html
-    We just hack our way through the COCO JSON files here for demonstration
-    purposes.
-    See also the MS-COCO format on the official Web page:
-    https://cocodataset.org/#format-data
-    2022 Benjamin Kellenberger
+    2022 Benjamin Kellenberger, Tiziana Gelmi-Candusso
 '''
 
 import os
@@ -48,8 +41,8 @@ class CTDataset(Dataset):
         for line in lines: # loop over lines
             file_name = line.strip().replace("\\", "/")
             sp = os.path.split(file_name)[0]
-            print(file_name)
-            print(os.path.split(file_name))
+            # print(file_name)
+            # print(os.path.split(file_name))
             
             # if not, add it and assign an index
             species_idx = self.species_to_index_mapping[sp]

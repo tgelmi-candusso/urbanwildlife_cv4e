@@ -10,18 +10,13 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_s
 from sklearn.metrics import precision_score, recall_score, f1_score, PrecisionRecallDisplay
 from sklearn.preprocessing import label_binarize
 import matplotlib.pyplot as plt
-from model import CustomResNet18
 from train import create_dataloader, load_model 
-import pandas as pd
-import random
-import IPython
 from tqdm import trange
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim import SGD
-from train import DataLoader
 
 # let's import our own classes and functions!
 from util import init_seed
@@ -29,35 +24,11 @@ from dataset import CTDataset
 from model import CustomResNet18
 from torch.utils.tensorboard import SummaryWriter 
 
-def load_model(cfg):
-    '''
-        Creates a model instance and loads the latest model state weights.
-    '''
-    model_instance = CustomResNet18(cfg['num_classes'])         # create an object instance of our CustomResNet18 class
 
-    # load latest model state
-    modelDir = cfg['model_dir']
-    if not modelDir.endswith(os.sep):
-        modelDir += os.sep
-    model_states = glob(os.path.join(modelDir, '*.pt'))
-    if len(model_states):
-        # at least one save state found; get latest
-        model_epochs = [int(m.replace(modelDir,'').replace('.pt','')) for m in model_states]
-        start_epoch = max(model_epochs)
+def predict(cfg, dataLoader, model, device):
 
-        # load state dict and apply weights to model
-        print(f'Resuming from epoch {start_epoch}')
-        state = torch.load(open(os.path.join(modelDir, f'{start_epoch}.pt'), 'rb'), map_location='cpu')
-        model_instance.load_state_dict(state['model'])
+    model.to(device)
 
-    else:
-        # no save state found; start anew
-        print('Starting new model')
-        start_epoch = 0
-
-    return model_instance, start_epoch
-
-def predict(cfg, dataLoader, model):
     with torch.no_grad(): # no gradients needed for prediction
         predictions = [] ## predictions as tensor probabilites
         true_labels = [] ## labels as 0, 1 .. (classes)
@@ -72,18 +43,19 @@ def predict(cfg, dataLoader, model):
             true_label = label.numpy()
             true_labels.extend(true_label)
 
+            data = data.to(device)
+
             prediction = model(data) ## the full probabilty
-            predictions.append(prediction)
+            predictions.append(prediction.cpu())
             #print(prediction.shape) ## it is going to be [batch size #num_classes]
             
             ## predictions
-            predict_label = torch.argmax(prediction, dim=1).numpy() ## the label
+            predict_label = torch.argmax(prediction.cpu(), dim=1).numpy() ## the label
             predicted_labels.extend(predict_label)
             #print(predict_label)
 
-            confidence = torch.nn.Softmax(dim=1)(prediction).numpy()
-            confidence = confidence[:,1]
-            confidences.extend(confidence)
+            confidence = torch.nn.Softmax(dim=1)(prediction).cpu().numpy()
+            confidences.append(confidence)
 
     true_labels = np.array(true_labels)
     #print(true_labels)
@@ -96,7 +68,7 @@ def predict(cfg, dataLoader, model):
 
     return true_labels, predicted_labels, confidences
 
-def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train', labels=None):
+def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train', split_type='random', labels=None):
     # make figures folder if not there
 
     os.makedirs('figs', exist_ok=True)
@@ -105,10 +77,57 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
     disp.plot()
     #plt.show()
-    plt.savefig('figs/confusion_matrix_epoch'+'_'+ str(split) +'.png', facecolor="white")
+    plt.savefig(f'figs/{split_type}/{split}/confusion_matrix_epoch_{epoch}.png', facecolor="white")
     
        ## took out epoch)
     return confmatrix
+
+def generate_results(data_loader, split, cfg, model, epoch, device, args):
+
+    split_type = cfg['split_type']
+
+    #predict
+    true_labels, predicted_labels, confidence = predict(cfg, data_loader, model, device)
+
+    #generate function for running results with true_labels, predicted_labels, confidence as input variables
+    # legend (species names in order)
+    species_available = np.unique(true_labels).tolist()
+    species_available.sort()
+    mapping_inv = dict([v,k] for k,v in data_loader.dataset.species_to_index_mapping.items())
+    legend = np.array([mapping_inv[s] for s in species_available])
+
+    # get accuracy score
+    ### this is just a way to get two decimal places 
+    acc = accuracy_score(true_labels, predicted_labels)
+    print("Accuracy of model is {:0.2f}".format(acc))
+
+    # confusion matrix
+    os.makedirs(f'figs/{split_type}/{split}/prec_rec', exist_ok=True)
+    confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = epoch, split = split, split_type=split_type, labels=legend)
+    print("confusion matrix saved")
+
+            ###evaluation metrics:
+    # For each class
+    precision = dict()
+    recall = dict()
+    average_precision = dict()
+
+    confidence = np.concatenate(confidence, 0)
+    for i in range(confidence.shape[1]):
+        y_true = true_labels == i
+        precision[i], recall[i], _ = precision_recall_curve(y_true, confidence[:, i])
+        average_precision[i] = average_precision_score(y_true, confidence[:, i])
+
+        display = PrecisionRecallDisplay(recall=recall[i],
+        precision=precision[i],
+        average_precision=average_precision[i],
+        )
+        display.plot()
+        _ = display.ax_.set_title(f"Prec-Rec ep. {epoch}, species {mapping_inv.get(i, i)}")
+        plt.savefig(f'figs/{split_type}/{split}/prec_rec/epoch_{epoch}_{mapping_inv.get(i, i)}.png', facecolor="white")
+    
+    #macro_average = sklearn.metrics.average_precision_score(true_labels, predicted_labels)
+        #print("Macro average of model is {:0.2f}".format(macro_average))
 
 
 def main():
@@ -141,33 +160,13 @@ def main():
     dl_val = create_dataloader(cfg, split='val')
     dl_test = create_dataloader(cfg, split='test')
 
-    def generate_results(data_loader, split):
+    # initialize model
+    model, epoch = load_model(cfg)
 
-        # initialize model
-        model, current_epoch = load_model(cfg)
+    generate_results(data_loader=dl_train, split='train', cfg = cfg, model=model, epoch=epoch, device =device, args = args)
+    generate_results(data_loader=dl_val, split='val', cfg = cfg, model=model, epoch=epoch, device = device, args = args)
+    generate_results(data_loader=dl_test, split='test', cfg = cfg, model=model, epoch=epoch, device=device, args = args)
 
-        #predict
-        true_labels, predicted_labels, confidence = predict(cfg, data_loader, model)
-
-        #generate function for running results with true_labels, predicted_labels, confidence as input variables
-        # legend (species names in order)
-        species_available = np.unique(true_labels).tolist()
-        species_available.sort()
-        mapping_inv = dict([v,k] for k,v in dl_val.dataset.species_to_index_mapping.items())
-        legend = np.array([mapping_inv[s] for s in species_available])
-
-        # get accuracy score
-        ### this is just a way to get two decimal places 
-        acc = accuracy_score(true_labels, predicted_labels)
-        print("Accuracy of model is {:0.2f}".format(acc))
-
-        # confusion matrix
-        confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = 200, split = split, labels=None)
-        print("confusion matrix saved")
-
-    generate_results(data_loader=dl_val, split='train')
-    generate_results(data_loader=dl_val, split='val')
-    generate_results(data_loader=dl_test, split='test')
 
     ######################### put this all in a function ###############
     # #this must categorical

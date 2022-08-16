@@ -73,16 +73,19 @@ def load_model(cfg):
 
 def save_model(cfg, epoch, model, stats):
     # make sure save directory exists; create if not
-    os.makedirs('model_states', exist_ok=True)
+    modelDir = cfg['model_dir']
+    if not modelDir.endswith(os.sep):
+        modelDir += os.sep
+    os.makedirs(modelDir, exist_ok=True)
 
     # get model parameters and add to stats...
     stats['model'] = model.state_dict()
 
     # ...and save
-    torch.save(stats, open(f'model_states/{epoch}.pt', 'wb'))
+    torch.save(stats, open(os.path.join(modelDir, f'{epoch}.pt'), 'wb'))
     
     # also save config file if not present
-    cfpath = 'model_states/config.yaml'
+    cfpath = os.path.join(modelDir, 'config.yaml')
     if not os.path.exists(cfpath):
         with open(cfpath, 'w') as f:
             yaml.dump(cfg, f)
