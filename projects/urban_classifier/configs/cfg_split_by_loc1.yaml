@@ -1,0 +1,23 @@
+# Here's where you define experiment-specific hyperparameters.
+# You can also create lists and group parameters together into nested sub-parts.
+# In Python, this is all read as a dict.
+
+# environment/computational parameters
+seed: 32678456782       # random number generator seed (long integer value)
+device: cuda
+num_workers: 8
+
+# dataset parameters
+data_root: '/datadrive/animals_training_dataset'
+num_classes: 19
+
+# training hyperparameters
+image_size: [224, 224]
+num_epochs: 200
+batch_size: 32
+learning_rate: 0.001
+weight_decay: 0.001
+
+log_dir: 'logs/urban_wildlife_split_by_loc' #or split_by_loc split_across_loc or random_split (already ran)
+split_type: 'split_by_loc' #or split_across_loc or split_random
+model_dir: 'model_states/split_by_loc'

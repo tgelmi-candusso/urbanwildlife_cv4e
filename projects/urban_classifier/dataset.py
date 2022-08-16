@@ -36,7 +36,7 @@ class CTDataset(Dataset):
         # index data into list
         self.data = []
         #dict categories
-        cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv'))
+        cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
         species_idx = cat_csv['class'].to_list()
         species = cat_csv['description'].to_list()
         self.species_to_index_mapping = dict(zip(species, species_idx))
