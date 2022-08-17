@@ -86,6 +86,7 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
 def generate_results(data_loader, split, cfg, model, epoch, device, args):
 
     split_type = cfg['split_type']
+    log_dir = cfg['log_dir']
 
     #predict
     true_labels, predicted_labels, confidence = predict(cfg, data_loader, model, device)
@@ -103,7 +104,7 @@ def generate_results(data_loader, split, cfg, model, epoch, device, args):
     print("Accuracy of model is {:0.2f}".format(acc))
 
     # confusion matrix
-    os.makedirs(f'figs/{split_type}/{split}/prec_rec', exist_ok=True)
+    os.makedirs(f'figs/{split_type}/{split}/{log_dir}/prec_rec', exist_ok=True)
     confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = epoch, split = split, split_type=split_type, labels=legend)
     print("confusion matrix saved")
 
