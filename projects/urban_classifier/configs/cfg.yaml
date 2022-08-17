@@ -24,4 +24,4 @@ model_dir: 'model_states/split_across_loc_transf_curriculum'
 
 ##data augmentation
 #curriculum learning, max numb of images per class
-max_num: [100, 100, 100, 100, 100, 200, 200, 200, 200, 200, 500, 500, 500, 500, 500, 1000, 1000, 1000, 1000, 1000, -1] #this could be an incremental list that increases the number of images use as epoch increases
+max_num: [100, 100, 100, 100, 100, 200, 200, 200, 200, 200, 500, 500, 500, 500, 500, 1000, 1000, 1000, 1000, 1000, 2000, 2000, 2000, 2000] #this could be an incremental list that increases the number of images use as epoch increases
