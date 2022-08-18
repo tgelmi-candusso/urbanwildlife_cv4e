@@ -50,6 +50,8 @@ class CTDataset(Dataset):
             if species_idx not in data_dict:
                 data_dict[species_idx] = []
             data_dict[species_idx].append(file_name)
+            for i in data_dict:
+                print(len(data_dict[i]))
         
         # subsample if needed
         self.data = []

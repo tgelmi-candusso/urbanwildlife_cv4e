@@ -111,6 +111,7 @@ def train(cfg, dataLoader, model, optimizer):
 
     device = cfg['device']
     weights = cfg['weights']
+    weights = cfg['weights']
 
     # put model on device
     model.to(device)
@@ -196,6 +197,7 @@ def validate(cfg, dataLoader, model):
     progressBar = trange(len(dataLoader))
     
     with torch.no_grad():               # don't calculate intermediate gradient steps: we don't need them, so this saves memory and is faster
+        ###why is it labels and not label if we name it as label in the dataloader??
         for idx, (data, labels, _) in enumerate(dataLoader):
 
             # put data and labels on device
