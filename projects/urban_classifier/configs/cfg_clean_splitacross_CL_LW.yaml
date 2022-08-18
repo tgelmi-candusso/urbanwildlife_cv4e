@@ -12,15 +12,15 @@ data_root: '/datadrive/animals_training_dataset'
 num_classes: 19
 
 # training hyperparameters
-image_size: [448, 448]
+image_size: [224, 224]
 num_epochs: 200
 batch_size: 128 ##it was 1 with random, tried 32 bs way faster tried 128 and only 10sec faster per epoc
 learning_rate: 0.001
 weight_decay: 0.001
 
-log_dir: 'logs/urban_wildlife_across_loc_transf_curriculum2000_weights_448s' #or split_by_loc split_across_loc or random_split (already ran)
+log_dir: 'logs/urban_wildlife_across_loc_transf_curriculum2000_weights' #or split_by_loc split_across_loc or random_split (already ran)
 split_type: 'split_across_loc' #or split_across_loc or split_random
-model_dir: 'model_states/split_across_loc_transf_curriculum2000_weights_448s'
+model_dir: 'model_states/split_across_loc_transf_curriculum2000_weights'
 
 ##data augmentation
 #curriculum learning, max numb of images per class
