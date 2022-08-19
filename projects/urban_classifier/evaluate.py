@@ -75,9 +75,9 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
 
     os.makedirs('figs', exist_ok=True)
 
-    confmatrix = confusion_matrix(true_labels, predicted_labels, normalize = 'true', )
+    confmatrix = confusion_matrix(true_labels, predicted_labels, normalize = 'true')
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
-    disp.plot(values_format = '.0%')
+    disp.plot(values_format = '.1f')
     #plt.show()
     plt.savefig(f'figs/{log_dir}/{split_type}/{split}/confusion_matrix_epoch_{epoch}.png', facecolor="white")
     
