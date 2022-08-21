@@ -15,12 +15,12 @@ num_classes: 19
 image_size: [224, 224]
 num_epochs: 200
 batch_size: 128 ##it was 1 with random, tried 32 bs way faster tried 128 and only 10sec faster per epoc
-learning_rate: 0.0001
+learning_rate: 0.001
 weight_decay: 0.001
 
-log_dir: 'logs/clean_split_by_loc_transf_curriculum2000_weights_LR00' #or split_by_loc split_across_loc or random_split (already ran)
-split_type: 'split_by_loc' #or split_across_loc or split_random
-model_dir: 'model_states/clean_split_by_loc_transf_curriculum2000_weights'
+log_dir: 'logs/clean_split_random2_transf_curriculum2000_weights' #or split_by_loc split_across_loc or random_split (already ran)
+split_type: 'split_random' #or split_across_loc or split_random
+model_dir: 'model_states/clean_split_random2_transf_curriculum2000_weights'
 
 ##data augmentation
 #curriculum learning, max numb of images per class
