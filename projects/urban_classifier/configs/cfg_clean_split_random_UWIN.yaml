@@ -18,9 +18,9 @@ batch_size: 128 ##it was 1 with random, tried 32 bs way faster tried 128 and onl
 learning_rate: 0.001
 weight_decay: 0.001
 
-log_dir: 'logs/TUWIN_s_rand_cur2k_LW_UWINfo_tRotBlu' #or split_by_loc split_across_loc or random_split (already ran)
-split_type: 'UWINfo/split_random' #or split_across_loc or split_random
-model_dir: 'model_states/TUWIN_s_rand_cur2k_LW_UWINf2_tRotBlu'
+log_dir: 'logs/clean_split_random_CL_LW_UWIN' #or split_by_loc split_across_loc or random_split (already ran)
+split_type: 'UWINfoccs/split_random' #or split_across_loc or split_random
+model_dir: 'model_states/clean_split_random_CL_LW_UWIN'
 
 ##data augmentation
 #curriculum learning, max numb of images per class
