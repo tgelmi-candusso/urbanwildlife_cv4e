@@ -6,8 +6,8 @@ import os
 import random
 from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, GaussianBlur, ToTensor, RandomRotation, RandomGrayscale, Normalize, Grayscale
-import imgaug as ia
-from imgaug import augmenters as iaa
+#import imgaug as ia
+#from imgaug import augmenters as iaa
 from PIL import Image
 import pandas as pd
 
@@ -29,7 +29,7 @@ class CTDataset(Dataset):
             RandomRotation(degrees=(-45, 45)), #random rotation with a rango of angles between -45 and 45 with a 10 angle interval
             #nop-RandomGrayscale(), #some pictures on grayscale #this was good for birds not small mammals
             #nop-RandomCrop(size=(150,100)), #random crop sizes of the crops
-            GaussianBlur(kernel_size=(21),sigma=(1, 2)),
+            GaussianBlur(kernel_size=(231),sigma=(0.05, 2)),
             #iaa.Sometimes(0.25, )
             #functional.adjust_hue(image,hue_factor=0.3)
             #GaussianBlur(kernel_size=(51, 91), sigma=2), #blur some images with a sigma of 1 and 3
