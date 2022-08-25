@@ -5,11 +5,12 @@
 import os
 import random
 from torch.utils.data import Dataset
-from torchvision.transforms import Compose, Resize, GaussianBlur, ToTensor, RandomRotation, RandomGrayscale, Normalize, Grayscale
+from torchvision.transforms import Compose, Resize, GaussianBlur, ToTensor, RandomRotation, RandomGrayscale, Normalize, Grayscale, RandomCrop
 #import imgaug as ia
 #from imgaug import augmenters as iaa
 from PIL import Image
 import pandas as pd
+import torch
 
 
 
@@ -26,15 +27,16 @@ class CTDataset(Dataset):
         self.max_num = max_num
         self.transform = Compose([              # Transforms. Here's where we could add data augmentation (see Björn's lecture on August 11).
             Resize((cfg['image_size'])),  # For now, we just resize the images to the same dimensions...
-            RandomRotation(degrees=(-45, 45)), #random rotation with a rango of angles between -45 and 45 with a 10 angle interval
+            RandomRotation(degrees=cfg['image_rotation']), #random rotation with a rango of angles between -45 and 45 with a 10 angle interval
             #nop-RandomGrayscale(), #some pictures on grayscale #this was good for birds not small mammals
+            RandomCrop(cfg['random_crop']))
             #nop-RandomCrop(size=(150,100)), #random crop sizes of the crops
-            GaussianBlur(kernel_size=(231),sigma=(0.05, 2)),
+            GaussianBlur(kernel_size=cfg['blur_kernel'],sigma=cfg['blur_sigma']),
             #iaa.Sometimes(0.25, )
             #functional.adjust_hue(image,hue_factor=0.3)
             #GaussianBlur(kernel_size=(51, 91), sigma=2), #blur some images with a sigma of 1 and 3
             ToTensor(),
-            #Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  #normalize to speed up computations
+            #Normalize(mean = torch.mean(ToTensor()(img),dim = (0,1,2)), st = torch.std(ToTensor()(img),dim = (0,1,2)))  #normalize to speed up computations
                           # ...and convert them to torch.Tensor.
         ]) 
         

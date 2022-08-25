@@ -13,14 +13,18 @@ num_classes: 19
 
 # training hyperparameters
 image_size: [224, 224]
+image_rotation: [-45, 45]
+random_crop: [224, 50]
+blur_kernel: 231
+blur_sigma: [0.05, 2]
 num_epochs: 200
 batch_size: 128 ##it was 1 with random, tried 32 bs way faster tried 128 and only 10sec faster per epoc
 learning_rate: 0.001
 weight_decay: 0.001
 
-log_dir: 'logs/TUWIN_s_rand_cur2k_LW_UWINfo_tRotBlu2' #or split_by_loc split_across_loc or random_split (already ran)
+log_dir: 'logs/TUWIN_s_rand_cur2k_LW_UWINfo_tRotBlu2_cfgtry' #or split_by_loc split_across_loc or random_split (already ran)
 split_type: 'UWINfo/split_random' #or split_across_loc or split_random
-model_dir: 'model_states/TUWIN_s_rand_cur2k_LW_UWINf2_tRotBlu2'
+model_dir: 'model_states/TUWIN_s_rand_cur2k_LW_UWINf2_tRotBlu2_cfgtry'
 
 ##data augmentation
 #curriculum learning, max numb of images per class
