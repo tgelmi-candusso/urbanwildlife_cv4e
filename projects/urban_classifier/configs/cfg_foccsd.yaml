@@ -1,0 +1,31 @@
+# Here's where you define experiment-specific hyperparameters.
+# You can also create lists and group parameters together into nested sub-parts.
+# In Python, this is all read as a dict.
+
+# environment/computational parameters
+seed: 32678456782       # random number generator seed (long integer value)
+device: cuda 
+num_workers: 6
+
+# dataset parameters
+data_root: '/datadrive/animals_training_dataset'
+num_classes: 19
+
+# training hyperparameters
+image_size: [224, 224]
+image_rotation: [-45, 45]
+
+num_epochs: 200
+batch_size: 128 ##it was 1 with random, tried 32 bs way faster tried 128 and only 10sec faster per epoc
+learning_rate: 0.001
+weight_decay: 0.001
+
+log_dir: 'logs/TUWIN_s_rand_cur2k_LW_UWINfoccds2' #or split_by_loc split_across_loc or random_split (already ran)
+split_type: 'UWINfoccds/split_random' #or split_across_loc or split_random
+model_dir: 'model_states/TUWIN_s_rand_cur2k_LW_UWINfoccds2'
+
+##data augmentation
+#curriculum learning, max numb of images per class
+max_num: [100, 100, 100, 100, 100, 200, 200, 200, 200, 200, 500, 500, 500, 500, 500, 1000, 1000, 1000, 1000, 1000, 2000] #this could be an incremental list that increases the number of images use as epoch increases
+#loss weights
+weights: [1,1,0.971447495,0.950677333,0.999586046,0.979892165,0.97848472,0.559407631,0.971344006,0.999927558,0.999886163,0.99973093,0.995218827,0.957611069,0.890115804,0.990344514,0.99990686,0.756429229,0.999989651]

@@ -3,10 +3,10 @@ import os
 import random
 from tkinter import W
 
-output_folder = '/datadrive/animals_training_dataset/UWINfoccs'
+output_folder = '/datadrive/animals_training_dataset/UWINfoccsd'
 training_folder = '/datadrive/animals_training_dataset/crops'
 sample_percent = [0.6, 0.1, 0.3]
-num_images_max = 1000
+num_images_max = 100000
 
 
 def split(training_folder, output_folder, sample_percent, num_images_max=None):

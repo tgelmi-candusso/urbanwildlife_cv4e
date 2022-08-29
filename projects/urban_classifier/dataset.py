@@ -24,11 +24,10 @@ class CTDataset(Dataset):
         self.max_num = max_num
         self.transform = Compose([              # Transforms. Here's where we could add data augmentation (see Björn's lecture on August 11).
             Resize((cfg['image_size'])),  # For now, we just resize the images to the same dimensions...
+            #RandomRotation(degrees=cfg['image_rotation']), #random rotation with a rango of angles between -45 and 45 with a 10 angle interval
             #RandomApply(transforms = [RandomCrop(224, 50)], p=0.15),
-            RandomRotation(degrees=cfg['image_rotation']), #random rotation with a rango of angles between -45 and 45 with a 10 angle interval
-            RandomApply(transforms = [GaussianBlur(kernel_size= (51), sigma = (1,2))], p=0.05),
+            #RandomApply(transforms = [GaussianBlur(kernel_size= (51), sigma = (1,2))], p=0.05),
             #nop-RandomGrayscale(), #some pictures on grayscale #this was good for birds not small mammals
-            #nop-RandomCrop(size=(150,100)), #random crop sizes of the crops
             #iaa.Sometimes(0.25, )
             #functional.adjust_hue(image,hue_factor=0.3)
             #GaussianBlur(kernel_size=(51, 91), sigma=2), #blur some images with a sigma of 1 and 3
