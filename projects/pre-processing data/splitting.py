@@ -3,7 +3,7 @@ import os
 import random
 from tkinter import W
 
-output_folder = '/datadrive/animals_training_dataset/UWINfoccsd'
+output_folder = '/datadrive/animals_training_dataset/uwinfoccsd_clean'
 training_folder = '/datadrive/animals_training_dataset/crops'
 sample_percent = [0.6, 0.1, 0.3]
 num_images_max = 100000
