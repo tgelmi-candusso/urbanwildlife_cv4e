@@ -13,7 +13,7 @@ import pandas as pd
 
 class CTDataset(Dataset):
 
-    def __init__(self, cfg, split='train', split_type = 'uwinfoccsd_clean/split_random', max_num=-1):
+    def __init__(self, cfg, split, split_type='random_split2' , max_num=-1):
         '''
             Constructor. Here, we collect and index the dataset inputs and
             labels.
