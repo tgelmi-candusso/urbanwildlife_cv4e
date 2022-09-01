@@ -21,7 +21,7 @@ learning_rate: 0.001
 weight_decay: 0.001
 
 log_dir: 'logs/TUWIN_s_rand_cur2k_LW_UWINfoccds400_Rot' #or split_by_loc split_across_loc or random_split (already ran)
-split_type: 'UWINfoccds_clean/split_random' #or split_across_loc or split_random
+split_type: 'uwinfoccsd_clean/split_random' #or split_across_loc or split_random
 model_dir: 'model_states/TUWIN_s_rand_cur2k_LW_UWINfoccds400_Rot'
 
 ##data augmentation
