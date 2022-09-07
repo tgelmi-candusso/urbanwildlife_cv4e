@@ -56,13 +56,14 @@ def split(training_folder, output_folder, sample_percent, num_images_max=None):
         sorted_names = names[ordered_indices]
         sorted_name_time_pairs = [(t,n) for t, n in zip(sorted_names, sorted_times)]
         reduced_files = [t0[0] for (t0,t1) in zip(sorted_name_time_pairs, sorted_name_time_pairs[1:]) if (t1[1] - t0[1]) > 5]
-        non_red_dic = [files_inside_s[k] for k in reduced_files]
+        #non_red_dic = [files_inside_s[k] for k in reduced_files]
 
-        files_inside_s1 = random.shuffle(non_red_dic)
+        ##random shuffle not working
+        #files_inside_s1 = random.shuffle(reduced_files)
 
-        if num_images_max is not None or num_images_max > len(files_inside_s1):
+        if num_images_max is not None or num_images_max > len(reduced_files):
             # perform random subsampling
-            files_inside_s1 = files_inside_s1[0:num_images_max]
+            files_inside_s1 = reduced_files[0:num_images_max]
 
         for f in range(len(files_inside_s1)):
             files_inside_s1[f] = os.path.join(sp, files_inside_s1[f])
