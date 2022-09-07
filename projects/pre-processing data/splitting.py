@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-output_folder = '/datadrive/animals_training_dataset/random_split2'
+output_folder = '/datadrive/animals_training_dataset/random_split3'
 training_folder = '/datadrive/animals_training_dataset/crops'
 sample_percent = [0.6, 0.1, 0.3]
 num_images_max = 100000
