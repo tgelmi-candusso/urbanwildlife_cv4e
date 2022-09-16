@@ -5,7 +5,7 @@
 import os
 import random
 from torch.utils.data import Dataset
-from torchvision.transforms import Compose, Resize, ToTensor
+from torchvision.transforms import Compose, Resize, RandomRotation, RandomCrop, GaussianBlur, ToTensor, RandomApply, Normalize
 from PIL import Image
 import pandas as pd
 
@@ -13,23 +13,33 @@ import pandas as pd
 
 class CTDataset(Dataset):
 
-    def __init__(self, cfg, split='train', split_type = 'split_by_loc', max_num=-1):
+    def __init__(self, cfg, split, split_type='random_split2' , max_num=-1):
         '''
             Constructor. Here, we collect and index the dataset inputs and
             labels.
         '''
         self.data_root = cfg['data_root']
         self.split = split
-        self.split_type = split_type
+        self.split_type = cfg['split_type']
         self.max_num = max_num
         self.transform = Compose([              # Transforms. Here's where we could add data augmentation (see Björn's lecture on August 11).
-            Resize((cfg['image_size'])),        # For now, we just resize the images to the same dimensions...
-            ToTensor()                          # ...and convert them to torch.Tensor.
-        ])
+            Resize((cfg['image_size'])),  # For now, we just resize the images to the same dimensions...
+            #RandomRotation(degrees=cfg['image_rotation']), #random rotation with a rango of angles between -45 and 45 with a 10 angle interval
+            #RandomApply(transforms = [RandomCrop(224, 50)], p=0.15),
+            #RandomApply(transforms = [GaussianBlur(kernel_size= (51), sigma = (1,2))], p=0.05),
+            #nop-RandomGrayscale(), #some pictures on grayscale #this was good for birds not small mammals
+            #iaa.Sometimes(0.25, )
+            #functional.adjust_hue(image,hue_factor=0.3)
+            #GaussianBlur(kernel_size=(51, 91), sigma=2), #blur some images with a sigma of 1 and 3
+            ToTensor(),
+            #Normalize(mean = [0.485, 0.456, 0.406], std =  [0.229, 0.224, 0.225])  #normalize to speed up computations
+                          # ...and convert them to torch.Tensor.
+        ]) 
         
         # index data into dict
         data_dict = {}
         #dict categories
+        ##the following will need to be transformed into a in script mapping dictionay when adding more classes for UWIN
         cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
         species_idx = cat_csv['class'].to_list()
         species = cat_csv['description'].to_list()
@@ -50,8 +60,6 @@ class CTDataset(Dataset):
             if species_idx not in data_dict:
                 data_dict[species_idx] = []
             data_dict[species_idx].append(file_name)
-            for i in data_dict:
-                print(len(data_dict[i]))
         
         # subsample if needed
         self.data = []

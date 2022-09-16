@@ -111,6 +111,7 @@ def train(cfg, dataLoader, model, optimizer):
 
     device = cfg['device']
     weights = cfg['weights']
+    weights = cfg['weights']
 
     # put model on device
     model.to(device)
@@ -120,11 +121,10 @@ def train(cfg, dataLoader, model, optimizer):
     # and validation (examples: Batch Normalization, Dropout, etc.)
     model.train()
 
-    # loss function
-    #criterion = nn.CrossEntropyLoss()
-    # Specify loss function - weighted cross entropy
+    # loss function # Specify loss function - weighted cross entropy
     class_weights = torch.FloatTensor(weights).cuda()
     criterion = nn.CrossEntropyLoss(weight = class_weights)
+    
 
     # running averages
     loss_total, oa_total = 0.0, 0.0                         # for now, we just log the loss and overall accuracy (OA)

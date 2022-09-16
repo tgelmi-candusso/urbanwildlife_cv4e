@@ -28,6 +28,7 @@ from torch.utils.tensorboard import SummaryWriter
 def predict(cfg, dataLoader, model, device):
 
     model.to(device)
+    model.eval()
 
     with torch.no_grad(): # no gradients needed for prediction
         predictions = [] ## predictions as tensor probabilites
@@ -69,16 +70,16 @@ def predict(cfg, dataLoader, model, device):
 
     return true_labels, predicted_labels, confidences
 
-def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train', split_type='random', labels=None):
+def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200', split='train', split_type='random', log_dir = "latest_exp", labels=None):
     # make figures folder if not there
 
     os.makedirs('figs', exist_ok=True)
 
-    confmatrix = confusion_matrix(true_labels, predicted_labels)
+    confmatrix = confusion_matrix(true_labels, predicted_labels, normalize = 'true')
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
-    disp.plot()
+    disp.plot(values_format = '.1f')
     #plt.show()
-    plt.savefig(f'figs/{split_type}/{split}/confusion_matrix_epoch_{epoch}.png', facecolor="white")
+    plt.savefig(f'figs/{log_dir}/{split_type}/{split}/confusion_matrix_epoch_{epoch}.png', facecolor="white")
     
        ## took out epoch)
     return confmatrix
@@ -86,6 +87,7 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
 def generate_results(data_loader, split, cfg, model, epoch, device, args):
 
     split_type = cfg['split_type']
+    log_dir = cfg['log_dir']
 
     #predict
     true_labels, predicted_labels, confidence = predict(cfg, data_loader, model, device)
@@ -103,8 +105,8 @@ def generate_results(data_loader, split, cfg, model, epoch, device, args):
     print("Accuracy of model is {:0.2f}".format(acc))
 
     # confusion matrix
-    os.makedirs(f'figs/{split_type}/{split}/prec_rec', exist_ok=True)
-    confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = epoch, split = split, split_type=split_type, labels=legend)
+    os.makedirs(f'figs/{log_dir}/{split_type}/{split}/prec_rec', exist_ok=True)
+    confmatrix = save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch = epoch, split = split, split_type=split_type, log_dir = log_dir, labels=legend)
     print("confusion matrix saved")
 
             ###evaluation metrics:
@@ -125,7 +127,7 @@ def generate_results(data_loader, split, cfg, model, epoch, device, args):
         )
         display.plot()
         _ = display.ax_.set_title(f"Prec-Rec ep. {epoch}, species {mapping_inv.get(i, i)}")
-        plt.savefig(f'figs/{split_type}/{split}/prec_rec/epoch_{epoch}_{mapping_inv.get(i, i)}.png', facecolor="white")
+        plt.savefig(f'figs/{log_dir}/{split_type}/{split}/prec_rec/epoch_{epoch}_{mapping_inv.get(i, i)}.png', facecolor="white")
     
     # for i in range(confidence.shape[0]): #for every image
     #     missclass = true_labels[i] != predicted_labels[i]
