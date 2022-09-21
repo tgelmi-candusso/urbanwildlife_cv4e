@@ -1,12 +1,9 @@
 .vscode
 datasets
-
 __pycache__
 *.pyc
-
 logs
 figs
-<<<<<<< HEAD
 model_states
 crops
 combined_multicity_metadata
@@ -21,8 +18,4 @@ megadetector
 plotting
 yolov5
 yolov5
-=======
 figs_old_noisy_data
-model_states
-crops
->>>>>>> e0b68c6a12d9ff56db422d111b49531208466148
