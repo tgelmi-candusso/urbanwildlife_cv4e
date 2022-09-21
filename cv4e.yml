@@ -178,4 +178,3 @@ dependencies:
   - zipp=3.8.0=py37h06a4308_0
   - zlib=1.2.12=h5eee18b_3
   - zstd=1.5.2=ha4553b6_0
-prefix: /home/max/miniconda3/envs/cv4e
