@@ -17,7 +17,7 @@ results in a paper 5. Citation information
 ## installation instructions
 
 ```
-conda create -f cv4e.yml
+conda env create -f cv4e.yml
 conda activate cv4e
 pip install setuptools==59.5.0
 ```
