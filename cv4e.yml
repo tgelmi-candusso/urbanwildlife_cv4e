@@ -15,4 +15,3 @@ dependencies:
   - pyyaml
   - glob2
   - tensorboard
-prefix: /home/max/miniconda3/envs/cv4e
