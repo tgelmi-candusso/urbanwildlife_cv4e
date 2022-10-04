@@ -122,7 +122,9 @@ def train(cfg, dataLoader, model, optimizer):
     model.train()
 
     # loss function # Specify loss function - weighted cross entropy
-    class_weights = torch.FloatTensor(weights).cuda()
+    class_weights = torch.FloatTensor(weights)
+    if torch.cuda.is_available():
+        class_weights = class_weights.cuda()
     criterion = nn.CrossEntropyLoss(weight = class_weights)
     
 

@@ -1,0 +1,17 @@
+name: cv4e
+channels:
+  - defaults
+dependencies:
+  - torchvision
+  - pandas
+  - matplotlib
+  - ipython
+  - pillow
+  - numpy
+  - imgaug
+  - scikit-learn
+  - pypi-json
+  - tqdm
+  - pyyaml
+  - glob2
+  - tensorboard

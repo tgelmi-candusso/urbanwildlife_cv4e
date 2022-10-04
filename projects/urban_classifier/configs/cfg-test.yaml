@@ -1,0 +1,73 @@
+# Here's where you define experiment-specific hyperparameters.
+# You can also create lists and group parameters together into nested sub-parts.
+# In Python, this is all read as a dict.
+
+# environment/computational parameters
+seed: 32678456782 # random number generator seed (long integer value)
+device: cpu
+num_workers: 6
+
+# dataset parameters
+data_root: "test"
+num_classes: 19
+
+# training hyperparameters
+image_size: [224, 224]
+image_rotation: [-45, 45]
+num_epochs: 1
+batch_size: 128 ##it was 1 with random, tried 32 bs way faster tried 128 and only 10sec faster per epoc
+learning_rate: 0.001
+weight_decay: 0.001
+
+log_dir: "logs/test" #or split_by_loc split_across_loc or random_split (already ran)
+split_type: "split_random" #or split_across_loc or split_random
+model_dir: "model_states/test"
+
+##data augmentation
+#curriculum learning, max numb of images per class
+max_num: [
+    100,
+    100,
+    100,
+    100,
+    100,
+    200,
+    200,
+    200,
+    200,
+    200,
+    500,
+    500,
+    500,
+    500,
+    500,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    2000,
+  ] #this could be an incremental list that increases the number of images use as epoch increases
+#loss weights
+weights:
+  [
+    1,
+    0.949867011,
+    0.98260658,
+    0.949867011,
+    0.999924486,
+    0.953005043,
+    0.674039083,
+    0.765285318,
+    0.95789668,
+    0.999949657,
+    0.999941267,
+    0.999848972,
+    0.900036079,
+    0.98004749,
+    0.950370439,
+    0.982648532,
+    0.999941267,
+    0.904600488,
+    0.99999161,
+  ]
