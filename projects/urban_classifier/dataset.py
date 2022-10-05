@@ -26,7 +26,7 @@ class CTDataset(Dataset):
             Resize((cfg['image_size'])),  # For now, we just resize the images to the same dimensions...
             #RandomRotation(degrees=cfg['image_rotation']), #random rotation with a rango of angles between -45 and 45 with a 10 angle interval
             #RandomApply(transforms = [RandomCrop(224, 50)], p=0.15),
-            #RandomApply(transforms = [GaussianBlur(kernel_size= (51), sigma = (1,2))], p=0.05),
+            #RandomApply(transforms = [GaussianBlur(kernel_size= (51), sigma = (1,2))], p=0.01),
             #nop-RandomGrayscale(), #some pictures on grayscale #this was good for birds not small mammals
             #iaa.Sometimes(0.25, )
             #functional.adjust_hue(image,hue_factor=0.3)
@@ -87,6 +87,7 @@ class CTDataset(Dataset):
 
         # load image
         image_path = os.path.join(self.data_root, 'crops', image_path)
+        #adding this to skip
         img = Image.open(image_path).convert('RGB')     # the ".convert" makes sure we always get three bands in Red, Green, Blue order
 
         # transform: see lines 31ff above where we define our transformations
