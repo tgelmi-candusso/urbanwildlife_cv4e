@@ -5,7 +5,7 @@
 import os
 import random
 from torch.utils.data import Dataset
-from torchvision.transforms import Compose, Resize, RandomRotation, RandomCrop, GaussianBlur, ToTensor, RandomApply, Normalize
+from torchvision.transforms import Compose, Resize, RandomRotation, RandomCrop, ToTensor, RandomApply, Normalize
 from PIL import Image
 import pandas as pd
 
@@ -44,23 +44,31 @@ class CTDataset(Dataset):
         species_idx = cat_csv['class'].to_list()
         species = cat_csv['description'].to_list()
         self.species_to_index_mapping = dict(zip(species, species_idx))
+        print('species-index-mapping')
+        print(self.species_to_index_mapping)
 
         #load the train file
+        print('split_type file path')
+        print(os.path.join(self.data_root, self.split_type.lower(), self.split.lower()+'.txt'))
         f = open(os.path.join(self.data_root, self.split_type.lower(), self.split.lower()+'.txt'), 'r') 
         lines = f.readlines() # load all lines
-
         for line in lines: # loop over lines
+            # 'Coyote/19473_IMG_2079.JPG\n'
+            sp = line.split('/')[0]
             file_name = line.strip().replace("\\", "/")
-            sp = os.path.split(file_name)[0]
-            # print(file_name)
+            #sp = os.path.split(file_name)[0]
+            #print('sp')
+            #print(sp)
             # print(os.path.split(file_name))
-            
+            #print(sp)
             # if not, add it and assign an index
+            #print(data_dict)
             species_idx = self.species_to_index_mapping[sp]
             if species_idx not in data_dict:
                 data_dict[species_idx] = []
             data_dict[species_idx].append(file_name)
-        
+        #print('data_dict')
+        #print(data_dict)
         # subsample if needed
         self.data = []
         for species in data_dict.keys():
@@ -69,7 +77,7 @@ class CTDataset(Dataset):
                 random.shuffle(species_list)
                 species_list = species_list[:min(len(species_list), max_num)]
             self.data.extend(species_list)
-
+        print(data_dict.keys())
 
     def __len__(self):
         '''
