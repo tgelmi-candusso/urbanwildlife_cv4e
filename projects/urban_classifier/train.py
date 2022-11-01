@@ -57,10 +57,10 @@ def load_model(cfg):
         model_epochs = [int(m.replace(modelDir,'').replace('.pt','')) for m in model_states]
         start_epoch = max(model_epochs)
 
-        # load state dict and apply weights to model
+        # load state dict and apply weights to model ### previous state would be the state of another model or the trianed model. 
         print(f'Resuming from epoch {start_epoch}')
         state = torch.load(open(os.path.join(modelDir, f'{start_epoch}.pt'), 'rb'), map_location='cpu')
-        model_instance.load_state_dict(state['model'])
+        model_instance.load_state_dict(state['model']) #load weights from a previous model
 
     else:
         # no save state found; start anew
