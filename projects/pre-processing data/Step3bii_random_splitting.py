@@ -7,8 +7,8 @@ import numpy as np
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-output_folder = '/home/compbio/GDrive/croppedOutput'
-training_folder = '/home/compbio/GDrive/croppedOutput/crops'
+output_folder = '/home/mgonzalez3/urbanwildlife_cv4e/projects/data/split_random'
+training_folder = '/home/mgonzalez3/urbanwildlife_cv4e/projects/data/crops'
 sample_percent = [0.6, 0.1, 0.3]
 num_images_max = 100000
 

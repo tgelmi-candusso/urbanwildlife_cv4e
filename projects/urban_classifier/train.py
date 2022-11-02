@@ -291,7 +291,8 @@ def main():
         # Curriculum learning: (re-) create training dataloader w.r.t. number of images per species
         num_imgs_per_species = cfg['max_num']
         idx = min(current_epoch, len(num_imgs_per_species)-1)
-        num_imgs_per_species = num_imgs_per_species[idx]
+        #num_imgs_per_species = num_imgs_per_species[idx]
+        num_imgs_per_species = -1
         print(f'Resampling training dataset with {num_imgs_per_species} images per species...')
         dl_train = create_dataloader(cfg, split='train', num_imgs_per_species=num_imgs_per_species)
 

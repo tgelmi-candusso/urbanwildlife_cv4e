@@ -26,6 +26,7 @@ from dataset import CTDataset
 from model import CustomResNet18
 from torch.utils.tensorboard import SummaryWriter 
 
+import csv
 def predict(cfg, dataLoader, model, device):
 
     model.to(device)
@@ -81,10 +82,8 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
     print(true_labels)
     print(json.dumps(predicted_labels.tolist()))
     print(labels)
-
-    # make sure to comment out the overriding of labels on line below
-    # this line was needed for initial debugging - it breaks the current workflow
-    # labels = ["empty", "human", "vehicle", "Bobcat", "Coyote"]
+    # array to reflect 63 classes
+    # labels = ['empty', 'human', 'vehicle', 'Coyote', 'Raccoon', 'Empty', 'Fox squirrel', 'Rabbit (cannot ID)', 'Unknown', 'Human', 'Desert cottontail rabbit', 'Bobcat', 'Western gray squirrel', 'Squirrel (cannot ID)', 'Bird', 'Striped Skunk', 'small mammal (cannot ID)', 'Mule deer', 'Domestic dog', 'Quail', 'Rat spp.', 'Butterfly', 'Turkey Vulture', 'Canada Goose', 'Greylag Goose', 'American robin', 'Mourning Dove', 'Virginia opossum', 'Killdeer', 'California Ground Squirrel', 'Lizard', 'Side-blotched Lizard', 'Common raven', 'California Towhee', 'Domestic cat', 'owl', 'California Scrub Jay', 'House Finch', 'California Thrasher', 'Western Fence Lizard', 'wren', 'Spotted Towhee', 'Deer (cannot ID)', 'White-crowned Sparrow', 'Western Toad', 'American Wigeon', 'Mallard duck', 'Gray fox', 'American Crow', 'Bird - Duck', 'Tiger Whiptail Lizard', 'Northern Mockingbird', 'Acorn Woodpecker', 'Hermit Thrush', 'Hummingbird', 'Horse', 'Brown Rat', 'Cormorant', 'Red-tailed hawk', 'Mountain lion', 'Kangaroo rat', 'Bird - Blue jay']
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
     disp.plot(values_format = '.1f')
     #plt.show()
@@ -103,13 +102,36 @@ def generate_results(data_loader, split, cfg, model, epoch, device, args):
 
     #generate function for running results with true_labels, predicted_labels, confidence as input variables
     # legend (species names in order)
-    species_available = np.unique(true_labels).tolist()
+    species_available = np.unique(true_labels).tolist() # change back to true_labels
     species_available.sort()
-    mapping_inv = dict([v,k] for k,v in data_loader.dataset.species_to_index_mapping.items())
-    legend = np.array([mapping_inv[s] for s in species_available])
-    print('legend')
+    mapping_inv = dict([v,k] for k,v in data_loader.dataset.species_to_index_mapping.items()) # maps all species, 62 elements
+    legend = np.array([mapping_inv[s] for s in species_available]) # creates array of available species names, 52
+    
+    
+    # reverse the map, get all values from mapping_inx (62)
+    keys = list(mapping_inv.keys())
+    values = list(mapping_inv.values())
+    # creates map of all species
+    mapping_species_avail = {} # want to create new map, only maps index to species of availble species (shorter version of mapping_inv)
+    for name in legend:
+        # get index ftom mapping_inv
+        index = values.index(name)
+        mapping_species_avail[index] = name  # maps available species names to value
+
+    # create new array with only available speces, should be 52
+    keys = list(mapping_species_avail.keys())
+    legend_avail = []
+    for ind in keys: # for index in mapping_speces_vail keys
+        # print(ind, mapping_species_avail[ind])
+        legend_avail.append(mapping_species_avail[ind])
+
+    print(len(legend_avail))
+    print('legend_avail', legend_avail)
+    print(len(legend))
     print(legend)
-    print(species_available)
+    print(len(mapping_inv))
+    print(mapping_inv)
+    
     # get accuracy score
     ### this is just a way to get two decimal places 
     acc = accuracy_score(true_labels, predicted_labels)
@@ -137,8 +159,8 @@ def generate_results(data_loader, split, cfg, model, epoch, device, args):
         average_precision=average_precision[i],
         )
         display.plot()
-        _ = display.ax_.set_title(f"Prec-Rec ep. {epoch}, species {mapping_inv.get(i, i)}")
-        plt.savefig(f'figs/{log_dir}/{split_type}/{split}/prec_rec/epoch_{epoch}_{mapping_inv.get(i, i)}.png', facecolor="white")
+        _ = display.ax_.set_title(f"Prec-Rec ep. {epoch}, species {mapping_species_avail.get(i, i)}")
+        plt.savefig(f'figs/{log_dir}/{split_type}/{split}/prec_rec/epoch_{epoch}_{mapping_species_avail.get(i, i)}.png', facecolor="white")
     
     # for i in range(confidence.shape[0]): #for every image
     #     missclass = true_labels[i] != predicted_labels[i]
@@ -198,6 +220,7 @@ def main():
     generate_results(data_loader=dl_val, split='val', cfg = cfg, model=model, epoch=epoch, device = device, args = args)
     generate_results(data_loader=dl_test, split='test', cfg = cfg, model=model, epoch=epoch, device=device, args = args)
 
+    # train(52), val (28), test (48)
 
     ######################### put this all in a function ###############
     # #this must categorical
