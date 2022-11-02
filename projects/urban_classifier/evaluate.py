@@ -162,6 +162,8 @@ def main():
     # python ct_classifier/train.py --config configs/cfg.yaml
     parser = argparse.ArgumentParser(description='Train deep learning model.')
     parser.add_argument('--config', help='Path to config file', default='projects/urban_classifier/configs/cfg.yaml')
+
+    # parser.add_argument('--config', help='Path to config file', default='/home/ykarandikar/cv4e/csvless/urbanwildlife_cv4e/projects/urban_classifier/configs/cfg.yaml')
     args = parser.parse_args()
 
     # load config
