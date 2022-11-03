@@ -8,8 +8,15 @@ device: cuda
 num_workers: 6
 
 # dataset parameters
-data_root: '/home/compbio/GDrive/croppedOutput'
-num_classes: 5
+#data_root: '/home/compbio/GDrive/croppedOutput'
+
+# change data_root to fit my own user directory
+# /home/ykarandikar/crop-test-pipeline -> both folders, crops and split_random, are in here
+data_root: '/home/ykarandikar/crop-test-pipeline'
+
+#num_classes: 5
+# 49 classes + 3 (empty, human, vehicle)
+num_classes: 52
 
 # training hyperparameters
 image_size: [224, 224]
@@ -26,4 +33,14 @@ model_dir: 'model_states/croppedOutputTest'
 #curriculum learning, max numb of images per class
 max_num: [10,10,10,10,10]
 #loss weights
-weights: [1,1,1,1,1]
+
+# these weights are overriden in train.py if needed to avoid the tensor error
+# if len(weights) < num_classes, train.py automatically makes a new dynamic array of weights for the appropriate number of classes
+weights:
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1 
+

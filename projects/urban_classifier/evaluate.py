@@ -81,7 +81,10 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
     print(true_labels)
     print(json.dumps(predicted_labels.tolist()))
     print(labels)
-    labels = ["empty", "human", "vehicle", "Bobcat", "Coyote"]
+
+    # make sure to comment out the overriding of labels on line below
+    # this line was needed for initial debugging - it breaks the current workflow
+    # labels = ["empty", "human", "vehicle", "Bobcat", "Coyote"]
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
     disp.plot(values_format = '.1f')
     #plt.show()
@@ -162,6 +165,8 @@ def main():
     # python ct_classifier/train.py --config configs/cfg.yaml
     parser = argparse.ArgumentParser(description='Train deep learning model.')
     parser.add_argument('--config', help='Path to config file', default='projects/urban_classifier/configs/cfg.yaml')
+
+    # parser.add_argument('--config', help='Path to config file', default='/home/ykarandikar/cv4e/csvless/urbanwildlife_cv4e/projects/urban_classifier/configs/cfg.yaml')
     args = parser.parse_args()
 
     # load config

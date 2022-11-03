@@ -35,22 +35,68 @@ class CTDataset(Dataset):
             #Normalize(mean = [0.485, 0.456, 0.406], std =  [0.229, 0.224, 0.225])  #normalize to speed up computations
                           # ...and convert them to torch.Tensor.
         ]) 
+       
+	
+        # populate data_dict without using read_csv
+        # should directly update data_dict from crops folder
+        # get the name of the crops and the index
+        # empty: 0, human: 1, vehicle: 2
+        # then, for each crop in crops, get name : index
+        #data_dict = {(0: 'empty'),
+
+	# loop through crops
+	# for each crop,
+	# put name : index into datadict
+	# print at end	
+
+        # create a function to make a module for csvless pipeline
+        # takes one argument: path to the crops folder
+        # e.g., /home/compbio/.../crops
         
-        # index data into dict
+        def populate_species_to_index_mapping(path_to_folder):
+			
+ 
+        	# index data into dict	
+        	species_to_index = {}
+        
+        	species_to_index['empty'] = 0
+        	species_to_index['human'] = 1
+        	species_to_index['vehicle'] = 2
+        
+        	# get crops information
+        	# crops is all the data - 52 classes, 49 generated from directory and 3 for empty, human, vehicle
+        	# crops2 is just Bobcat and Coyote
+       		#folder_dir = "/home/ykarandikar/crop-test-pipeline/crops2"        
+        	folder_dir = path_to_folder        	
+
+        	print("subfolders: ")
+        	subfolders = [ f.name for f in os.scandir(folder_dir) if f.is_dir() ]
+        	print(subfolders)
+
+        	# put subfolder names into the crops
+        	count = 3
+        	for name in subfolders:
+                	species_to_index[name] = count
+                	count += 1
+        
+        	##the following will need to be transformed into a in script mapping dictionay when adding more classes for UWIN
+        	#cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
+        	#species_idx = cat_csv['class'].to_list()
+        	#species = cat_csv['description'].to_list()
+        
+        	self.species_to_index_mapping = species_to_index 
+        	print('species-index-mapping')
+        	print(self.species_to_index_mapping)
+
+        # use all 52 classes
+        populate_species_to_index_mapping('/home/ykarandikar/crop-test-pipeline/crops')
+
         data_dict = {}
-        #dict categories
-        ##the following will need to be transformed into a in script mapping dictionay when adding more classes for UWIN
-        cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
-        species_idx = cat_csv['class'].to_list()
-        species = cat_csv['description'].to_list()
-        self.species_to_index_mapping = dict(zip(species, species_idx))
-        print('species-index-mapping')
-        print(self.species_to_index_mapping)
 
         #load the train file
         print('split_type file path')
         print(os.path.join(self.data_root, self.split_type.lower(), self.split.lower()+'.txt'))
-        f = open(os.path.join(self.data_root, self.split_type.lower(), self.split.lower()+'.txt'), 'r') 
+        f = open(os.path.join(self.data_root, self.split_type.lower(), self.split.lower()+'.txt'), 'r')
         lines = f.readlines() # load all lines
         for line in lines: # loop over lines
             # 'Coyote/19473_IMG_2079.JPG\n'
@@ -64,6 +110,12 @@ class CTDataset(Dataset):
             # if not, add it and assign an index
             #print(data_dict)
             species_idx = self.species_to_index_mapping[sp]
+            
+
+            print("species_idx")
+
+            print(species_idx)
+            print(self.species_to_index_mapping[sp])
             if species_idx not in data_dict:
                 data_dict[species_idx] = []
             data_dict[species_idx].append(file_name)
@@ -77,7 +129,9 @@ class CTDataset(Dataset):
                 random.shuffle(species_list)
                 species_list = species_list[:min(len(species_list), max_num)]
             self.data.extend(species_list)
-        print(data_dict.keys())
+        
+        print(data_dict)
+        print(data_dict.keys())     
 
     def __len__(self):
         '''
