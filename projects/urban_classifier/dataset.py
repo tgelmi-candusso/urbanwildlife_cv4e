@@ -48,41 +48,48 @@ class CTDataset(Dataset):
 	# for each crop,
 	# put name : index into datadict
 	# print at end	
+
+        # create a function to make a module for csvless pipeline
+        # takes one argument: path to the crops folder
+        # e.g., /home/compbio/.../crops
+        
+        def populate_species_to_index_mapping(path_to_folder):
+			
  
-        # index data into dict
-        species_to_index = {}
+        	# index data into dict	
+        	species_to_index = {}
         
-        species_to_index['empty'] = 0
-        species_to_index['human'] = 1
-        species_to_index['vehicle'] = 2
+        	species_to_index['empty'] = 0
+        	species_to_index['human'] = 1
+        	species_to_index['vehicle'] = 2
         
-        # get crops information
-        folder_dir = "/home/ykarandikar/crop-test-pipeline/crops"        
-        #l = [x[0] for x in os.walk("~/crop-test-pipeline/crops/")]
-        print("subfolders: ")
-        subfolders = [ f.name for f in os.scandir(folder_dir) if f.is_dir() ]
-        print(subfolders)
+        	# get crops information
+        	# crops is all the data - 52 classes, 49 generated from directory and 3 for empty, human, vehicle
+        	# crops2 is just Bobcat and Coyote
+       		#folder_dir = "/home/ykarandikar/crop-test-pipeline/crops2"        
+        	folder_dir = path_to_folder        	
 
+        	print("subfolders: ")
+        	subfolders = [ f.name for f in os.scandir(folder_dir) if f.is_dir() ]
+        	print(subfolders)
 
+        	# put subfolder names into the crops
+        	count = 3
+        	for name in subfolders:
+                	species_to_index[name] = count
+                	count += 1
+        
+        	##the following will need to be transformed into a in script mapping dictionay when adding more classes for UWIN
+        	#cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
+        	#species_idx = cat_csv['class'].to_list()
+        	#species = cat_csv['description'].to_list()
+        
+        	self.species_to_index_mapping = species_to_index 
+        	print('species-index-mapping')
+        	print(self.species_to_index_mapping)
 
-
-        # put subfolder names into the crops
-        count = 3
-        for name in subfolders:
-                species_to_index[name] = count
-                count += 1
-
-
-
-        #dict categories
-        ##the following will need to be transformed into a in script mapping dictionay when adding more classes for UWIN
-        #cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
-        #species_idx = cat_csv['class'].to_list()
-        #species = cat_csv['description'].to_list()
-        self.species_to_index_mapping = species_to_index 
-        print('species-index-mapping')
-        print(self.species_to_index_mapping)
-
+        # use all 52 classes
+        populate_species_to_index_mapping('/home/ykarandikar/crop-test-pipeline/crops')
 
         data_dict = {}
 

@@ -81,7 +81,10 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
     print(true_labels)
     print(json.dumps(predicted_labels.tolist()))
     print(labels)
-    labels = ["empty", "human", "vehicle", "Bobcat", "Coyote"]
+
+    # make sure to comment out the overriding of labels on line below
+    # this line was needed for initial debugging - it breaks the current workflow
+    # labels = ["empty", "human", "vehicle", "Bobcat", "Coyote"]
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
     disp.plot(values_format = '.1f')
     #plt.show()

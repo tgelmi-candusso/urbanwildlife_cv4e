@@ -111,7 +111,21 @@ def train(cfg, dataLoader, model, optimizer):
 
     device = cfg['device']
     weights = cfg['weights']
-    weights = cfg['weights']
+
+    # get num_classes from projects/urban_classifier/configs/cfg.yaml
+    # num_classes is just like weights and device above
+
+    # if length of weights < num_classes, make weights = [1] * num_classes    
+    # this makes it so that we don't have to hardcode the weights with an array of num_classes 1's each time
+    # much more scalable 
+
+    num_classes = cfg['num_classes']
+
+    #print("num weights:")
+    #print(weights)
+
+    if len(weights) <= num_classes:
+    	weights = [1] * num_classes
 
     # put model on device
     model.to(device)
