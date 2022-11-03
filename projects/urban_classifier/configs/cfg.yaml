@@ -1,0 +1,46 @@
+# Here's where you define experiment-specific hyperparameters.
+# You can also create lists and group parameters together into nested sub-parts.
+# In Python, this is all read as a dict.
+
+# environment/computational parameters
+seed: 32678456782       # random number generator seed (long integer value)
+device: cuda 
+num_workers: 6
+
+# dataset parameters
+#data_root: '/home/compbio/GDrive/croppedOutput'
+
+# change data_root to fit my own user directory
+# /home/ykarandikar/crop-test-pipeline -> both folders, crops and split_random, are in here
+data_root: '/home/ykarandikar/crop-test-pipeline'
+
+#num_classes: 5
+# 49 classes + 3 (empty, human, vehicle)
+num_classes: 52
+
+# training hyperparameters
+image_size: [224, 224]
+num_epochs: 4
+batch_size: 128 ##it was 1 with random, tried 32 bs way faster tried 128 and only 10sec faster per epoc
+learning_rate: 0.001
+weight_decay: 0.001
+
+log_dir: 'logs/croppedOutputTest' #or split_by_loc split_across_loc or random_split (already ran)
+split_type: 'split_random' #or split_across_loc or split_random
+model_dir: 'model_states/croppedOutputTest'
+
+##data augmentation
+#curriculum learning, max numb of images per class
+max_num: [10,10,10,10,10]
+#loss weights
+
+# these weights are overriden in train.py if needed to avoid the tensor error
+# if len(weights) < num_classes, train.py automatically makes a new dynamic array of weights for the appropriate number of classes
+weights:
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1 
+

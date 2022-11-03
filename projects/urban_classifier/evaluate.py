@@ -1,3 +1,4 @@
+import json
 import yaml
 import torch
 import scipy
@@ -41,6 +42,7 @@ def predict(cfg, dataLoader, model, device):
         #print(len(dataLoader)) ## number of total divisions n/batchsize
         for idx, (data, label, image_path) in enumerate(tqdm(dataLoader)): 
                 #print(idx)
+            print(label)
             true_label = label.numpy()
             true_labels.extend(true_label)
 
@@ -76,6 +78,13 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
     os.makedirs('figs', exist_ok=True)
 
     confmatrix = confusion_matrix(true_labels, predicted_labels, normalize = 'true')
+    print(true_labels)
+    print(json.dumps(predicted_labels.tolist()))
+    print(labels)
+
+    # make sure to comment out the overriding of labels on line below
+    # this line was needed for initial debugging - it breaks the current workflow
+    # labels = ["empty", "human", "vehicle", "Bobcat", "Coyote"]
     disp = ConfusionMatrixDisplay(confmatrix, display_labels=labels)
     disp.plot(values_format = '.1f')
     #plt.show()
@@ -98,7 +107,9 @@ def generate_results(data_loader, split, cfg, model, epoch, device, args):
     species_available.sort()
     mapping_inv = dict([v,k] for k,v in data_loader.dataset.species_to_index_mapping.items())
     legend = np.array([mapping_inv[s] for s in species_available])
-
+    print('legend')
+    print(legend)
+    print(species_available)
     # get accuracy score
     ### this is just a way to get two decimal places 
     acc = accuracy_score(true_labels, predicted_labels)
@@ -154,6 +165,8 @@ def main():
     # python ct_classifier/train.py --config configs/cfg.yaml
     parser = argparse.ArgumentParser(description='Train deep learning model.')
     parser.add_argument('--config', help='Path to config file', default='projects/urban_classifier/configs/cfg.yaml')
+
+    # parser.add_argument('--config', help='Path to config file', default='/home/ykarandikar/cv4e/csvless/urbanwildlife_cv4e/projects/urban_classifier/configs/cfg.yaml')
     args = parser.parse_args()
 
     # load config

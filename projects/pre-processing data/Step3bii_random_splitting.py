@@ -7,8 +7,8 @@ import numpy as np
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-output_folder = '/datadrive/animals_training_dataset/tuw_uwin_nonred2'
-training_folder = '/datadrive/animals_training_dataset/crops'
+output_folder = '/home/compbio/GDrive/croppedOutput'
+training_folder = '/home/compbio/GDrive/croppedOutput/crops'
 sample_percent = [0.6, 0.1, 0.3]
 num_images_max = 100000
 
