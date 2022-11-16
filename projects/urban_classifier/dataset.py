@@ -62,7 +62,11 @@ class CTDataset(Dataset):
         	species_to_index['empty'] = 0
         	species_to_index['human'] = 1
         	species_to_index['vehicle'] = 2
-        
+
+		# add default empty, human, and vehicle to list to check if crops folders are not any of these categories
+        	ehv = ['empty', 'human', 'vehicle']
+
+
         	# get crops information
         	# crops is all the data - 52 classes, 49 generated from directory and 3 for empty, human, vehicle
         	# crops2 is just Bobcat and Coyote
@@ -76,8 +80,9 @@ class CTDataset(Dataset):
         	# put subfolder names into the crops
         	count = 3
         	for name in subfolders:
-                	species_to_index[name] = count
-                	count += 1
+        	        if name not in ehv: # only add those subfolders which are not titled "empty" "human" or "vehicle" 
+	                	species_to_index[name] = count
+                		count += 1
         
         	##the following will need to be transformed into a in script mapping dictionay when adding more classes for UWIN
         	#cat_csv = pd.read_csv(os.path.join(self.data_root, 'categories.csv')) #this could go into the cfg file
@@ -89,7 +94,9 @@ class CTDataset(Dataset):
         	print(self.species_to_index_mapping)
 
         # use all 52 classes
-        populate_species_to_index_mapping('/home/ykarandikar/crop-test-pipeline/crops')
+	# argument given to populate_species_to_index_mapping is whichever directory leads to the crops
+        # populate_species_to_index_mapping('/home/ykarandikar/crop-test-pipeline/crops')
+        populate_species_to_index_mapping('/home/compbio/GDrive/croppedOutput/crops') # should also work if argument is directory in /home/compbio
 
         data_dict = {}
 
