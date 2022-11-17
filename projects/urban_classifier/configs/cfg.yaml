@@ -12,7 +12,7 @@ num_workers: 6
 
 # change data_root to fit my own user directory
 # /home/ykarandikar/crop-test-pipeline -> both folders, crops and split_random, are in here
-data_root: '/home/ykarandikar/crop-test-pipeline'
+data_root: '/home/compbio/GDrive/croppedOutput'
 
 #num_classes: 5
 # 49 classes + 3 (empty, human, vehicle)
