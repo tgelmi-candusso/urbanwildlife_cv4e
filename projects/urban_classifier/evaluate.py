@@ -82,6 +82,12 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
     print(json.dumps(predicted_labels.tolist()))
     print(labels)
 
+    print("true labels confmatrix")
+    print(true_labels)
+
+    print("labels confmatrix")
+    print(labels)
+
     # make sure to comment out the overriding of labels on line below
     # this line was needed for initial debugging - it breaks the current workflow
     # labels = ["empty", "human", "vehicle", "Bobcat", "Coyote"]
@@ -95,20 +101,103 @@ def save_confusion_matrix(true_labels, predicted_labels, cfg, args, epoch='200',
 
 def generate_results(data_loader, split, cfg, model, epoch, device, args):
 
+
+    print("data loader")
+    print(data_loader)
+    print(data_loader.dataset.species_to_index_mapping)
+
+    print(data_loader.dataset.species_to_index_mapping.items())
+
     split_type = cfg['split_type']
     log_dir = cfg['log_dir']
 
     #predict
     true_labels, predicted_labels, confidence = predict(cfg, data_loader, model, device)
 
+
+    print("true_labels")
+    print(true_labels)
+    print(len(true_labels))
+
+
+    print("predicted_labels")
+    print(predicted_labels)
+    print(len(predicted_labels))
+    print(len(np.unique(predicted_labels).tolist()))
+
     #generate function for running results with true_labels, predicted_labels, confidence as input variables
     # legend (species names in order)
     species_available = np.unique(true_labels).tolist()
     species_available.sort()
+    
+
+    """
+    Previous error as follows:
+    python projects/urban_classifier/train.py worked OK
+    python projects/urban_classifier/evaluate.py would crash with error: FixedLocator 28 does not match with 52
+    28 was from np.unique(pred_labels), while 52 was from the number of classes in the crops as read from the folder structure
+
+    Current fix:
+    follow Max's suggestion and make everything come from predicted_labels
+    Create mapping_inv_pred, which is a species to index mapping dict that only includes classes within the predicted labels
+    mapping_inv_pred -> {0: empty, 1: human, 6: hawk, ...} - the exact classes will come from predicted labels
+
+    Then, have legend for matplotlib come from strings from mapping_inv_pred. This is the value in the dictionary.
+    With these fixes, the FixedLocator bug is fixed
+    """
+    
+    # everything comes from predicted_labels
+    # mapping inv: number : species name
+    # base everything off of predicted labels, and get unique labels (28)
+    pred_uniq = np.unique(predicted_labels)
+
+    print("pred_uniq")
+    print(pred_uniq)
+
+    # same definition of mapping_inv, but also create mapping_inv_pred for csvless evaluate.py
     mapping_inv = dict([v,k] for k,v in data_loader.dataset.species_to_index_mapping.items())
-    legend = np.array([mapping_inv[s] for s in species_available])
+    mapping_inv_pred = {}    
+
+
+    # populate mapping_inv_pred with key:value pairs that are number:name
+    for k, v in data_loader.dataset.species_to_index_mapping.items():
+        if v in list(pred_uniq):
+            mapping_inv_pred[v] = k
+
+
+    print("mapping inv")
+
+    print(mapping_inv)
+
+
+    print("mapping inv pred")
+    print(mapping_inv_pred)
+
+    print("mapping inv length")
+    print(len(mapping_inv))
+
+
+    print("species available")
+    print(species_available)
+
+
+    # legend = np.array([mapping_inv[s] for s in species_available])
+    # print(data_loader.dataset.species_to_index_mapping.values())
+    
+
+    # legend is array of strings that comes from predicted_labels
+    # number of classes matches with mapping_inv_pred - 28 total
+    legend = np.array([mapping_inv_pred[s] for s in mapping_inv_pred])
+
+
     print('legend')
     print(legend)
+
+
+    print("Legend length")
+    print(len(legend))
+
+
     print(species_available)
     # get accuracy score
     ### this is just a way to get two decimal places 
@@ -166,7 +255,6 @@ def main():
     parser = argparse.ArgumentParser(description='Train deep learning model.')
     parser.add_argument('--config', help='Path to config file', default='projects/urban_classifier/configs/cfg.yaml')
 
-    # parser.add_argument('--config', help='Path to config file', default='/home/ykarandikar/cv4e/csvless/urbanwildlife_cv4e/projects/urban_classifier/configs/cfg.yaml')
     args = parser.parse_args()
 
     # load config
